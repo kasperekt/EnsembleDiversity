@@ -1,23 +1,24 @@
 import networkx as nx
 import pygraphviz as pgv
 
+from typing import List
 from structure.utils import is_leaf
 
 
 class TreeStructure:
-    def __init__(self, feature_names):
+    def __init__(self, feature_names: List[str]):
         self.tree = nx.DiGraph()
         self.feature_names = feature_names
 
     @staticmethod
-    def node_name(idx):
+    def node_name(idx: int):
         return f'Node_{idx}'
 
     @staticmethod
-    def leaf_name(idx):
+    def leaf_name(idx: int):
         return f'Leaf_{idx}'
 
-    def add_split(self, idx, decision_type, feature, threshold):
+    def add_split(self, idx: int, decision_type: str, feature: str, threshold: float):
         self.tree.add_node(self.node_name(idx),
                            decision_type=decision_type,
                            feature=feature,
@@ -25,14 +26,14 @@ class TreeStructure:
                            is_split=True,
                            is_leaf=False)
 
-    def add_leaf(self, idx, value, count):
+    def add_leaf(self, idx: int, value: float, count: int):
         self.tree.add_node(self.leaf_name(idx),
                            value=value,
                            count=count,
                            is_split=False,
                            is_leaf=True)
 
-    def add_edge(self, parent, child):
+    def add_edge(self, parent: dict, child: dict):
         parent_idx = self.node_name(parent['split_index'])
         child_idx = self.leaf_name(child['leaf_index']) if is_leaf(child) else self.node_name(child['split_index'])
         self.tree.add_edge(parent_idx, child_idx, threshold='HARDCODED')
@@ -43,7 +44,7 @@ class TreeStructure:
     def num_edges(self):
         return len(self.tree.edges)
 
-    def draw(self, path):
+    def draw(self, path: str):
         tree_copy = self.tree.copy()
         for node_idx, node_data in tree_copy.nodes(data=True):
             if node_data['is_split']:

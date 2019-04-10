@@ -4,7 +4,7 @@ from structure.TreeStructure import TreeStructure
 from structure.utils import is_split, is_leaf
 
 
-def node_index_of(child):
+def node_index_of(child: dict):
     if is_leaf(child):
         return child['leaf_index']
     elif is_split(child):
@@ -13,7 +13,7 @@ def node_index_of(child):
         raise ValueError('Child is not a valid structure')
 
 
-def parse_tree(tree, feature_names):
+def parse_tree(tree: dict, feature_names: List[str]) -> TreeStructure:
     return_tree = TreeStructure(feature_names)
 
     def traverse(structure):
@@ -43,10 +43,10 @@ def parse_tree(tree, feature_names):
     return return_tree
 
 
-def parse_lightgbm_json(json_object) -> List[TreeStructure]:
+def parse_lightgbm_json(json_object: dict):
     feature_names = json_object['feature_names']
     trees = json_object['tree_info']
 
     structures = [parse_tree(tree, feature_names) for tree in trees]
-    
+
     return structures
