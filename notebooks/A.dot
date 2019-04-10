@@ -1,0 +1,14 @@
+strict digraph "" {
+	Jeden	 [data=Hello,
+		value=10];
+	Dwa	 [data=World,
+		value=20];
+	Jeden -> Dwa	 [value=15];
+	Cztery	 [data=World,
+		value=20];
+	Dwa -> Cztery	 [value=15];
+	Trzy	 [data=World,
+		value=20];
+	Trzy -> Dwa	 [value=1];
+	Cztery -> Trzy	 [value=1];
+}
