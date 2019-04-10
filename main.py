@@ -13,7 +13,7 @@ def main():
     lgb_json = clf.booster_.dump_model()
     tree_structures = parse_lightgbm_json(lgb_json)
     for i, tree_structure in enumerate(tree_structures):
-        tree_path = os.path.join('out', f'tree_{i + 1}.png')
+        tree_path = os.path.join('plots', f'tree_{i + 1}.png')
         tree_structure.draw(tree_path)
 
 
