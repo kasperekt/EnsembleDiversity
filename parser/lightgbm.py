@@ -1,5 +1,6 @@
 from typing import List
 
+from lightgbm import LGBMClassifier
 from structure.TreeStructure import TreeStructure
 from structure.utils import is_split, is_leaf
 
@@ -35,16 +36,21 @@ def parse_tree(tree: dict, feature_names: List[str]) -> TreeStructure:
             traverse(left_child)
             traverse(right_child)
 
-            return_tree.add_edge(structure, left_child)
-            return_tree.add_edge(structure, right_child)
+            return_tree.add_edge(node_index_of(structure),
+                                 node_index_of(left_child),
+                                 is_child_leaf=is_leaf(left_child))
+            return_tree.add_edge(node_index_of(structure),
+                                 node_index_of(right_child),
+                                 is_child_leaf=is_leaf(right_child))
 
     traverse(tree['tree_structure'])
 
     return return_tree
 
 
-def parse_lightgbm_json(json_object: dict):
-    feature_names = json_object['feature_names']
+def parse_lightgbm(clf: LGBMClassifier):
+    json_object: dict = clf.booster_.dump_model()
+    feature_names: List[str] = json_object['feature_names']
     trees = json_object['tree_info']
 
     structures = [parse_tree(tree, feature_names) for tree in trees]

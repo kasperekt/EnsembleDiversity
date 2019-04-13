@@ -1,18 +1,41 @@
 import os
 import lightgbm as lgb
+from sklearn.tree import DecisionTreeClassifier
 from sklearn.datasets import load_iris
-from parser.lightgbm import parse_lightgbm_json
+from sklearn.ensemble import AdaBoostClassifier
+from parser.lightgbm import parse_lightgbm
+from parser.sklearn import parse_sklearn
 
 
-def main():
-    X, y = load_iris(True)
-
+def get_lgb_trees(X, y, **kwargs):
     clf = lgb.LGBMClassifier(n_estimators=5, objective='multiclass')
     clf.fit(X, y)
 
-    lgb_json = clf.booster_.dump_model()
-    tree_structures = parse_lightgbm_json(lgb_json)
-    for i, tree_structure in enumerate(tree_structures):
+    return parse_lightgbm(clf)
+
+
+def get_sklearn_trees(X, y, **kwargs):
+    tree = DecisionTreeClassifier(max_depth=3)
+    clf = AdaBoostClassifier(base_estimator=tree, n_estimators=5)
+    clf.fit(X, y)
+
+    return parse_sklearn(clf, **kwargs)
+
+
+def main():
+    iris = load_iris()
+    X, y = iris.data, iris.target
+
+    additional_data = {
+        'feature_names': iris.feature_names,
+        'target_names': iris.target_names
+    }
+
+    tree_structures_sklearn = get_sklearn_trees(X, y, **additional_data)
+    # tree_structures_lgb = get_lgb_trees(X, y, **additional_data)
+
+    # for i, tree_structure in enumerate(tree_structures_lgb):
+    for i, tree_structure in enumerate(tree_structures_sklearn):
         tree_path = os.path.join('plots', f'tree_{i + 1}.png')
         tree_structure.draw(tree_path)
 
