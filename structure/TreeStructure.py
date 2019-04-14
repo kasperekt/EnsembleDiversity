@@ -1,14 +1,15 @@
 import networkx as nx
 import pygraphviz as pgv
 
-from typing import List
+from abc import abstractmethod
 
 
-class TreeStructure:
-    def __init__(self, feature_names: List[str], target_names: List[str]):
+class TreeStructure(object):
+    def __init__(self, feature_names, target_names, clf_type="n/d"):
         self.tree = nx.DiGraph()
         self.feature_names = feature_names
         self.target_names = target_names
+        self.clf_type = clf_type
 
     @staticmethod
     def node_name(idx: int):
@@ -26,11 +27,10 @@ class TreeStructure:
                            is_split=True,
                            is_leaf=False)
 
-    def add_leaf(self, idx: int, value: float, target: int = -1, count: int = 0):
+    @abstractmethod
+    def add_leaf(self, idx: int, **kwargs):
         self.tree.add_node(self.leaf_name(idx),
-                           value=value,
-                           count=count,
-                           target=target,
+                           **kwargs,
                            is_split=False,
                            is_leaf=True)
 
@@ -48,6 +48,10 @@ class TreeStructure:
     def num_edges(self):
         return len(self.tree.edges)
 
+    @abstractmethod
+    def leaf_label(self, node_data: dict):
+        raise NotImplementedError('"leaf_label" method is not implemented')
+
     def draw(self, path: str):
         tree_copy = self.tree.copy()
         for node_idx, node_data in tree_copy.nodes(data=True):
@@ -57,9 +61,7 @@ class TreeStructure:
                 threshold = node_data['threshold']
                 node_data['label'] = f'{feature}\n{decision_type}\n{threshold}'
             elif node_data['is_leaf']:
-                target = node_data['target']
-                target_name = self.target_names[target] if target != -1 else 'n/d'
-                node_data['label'] = f"{target_name}\n{node_data['value']}"
+                node_data['label'] = self.leaf_label(node_data)
 
         graph_str = str(nx.nx_agraph.to_agraph(tree_copy))
         pgv_graph = pgv.AGraph(graph_str)

@@ -5,13 +5,15 @@ from sklearn.datasets import load_iris
 from sklearn.ensemble import AdaBoostClassifier
 from parser.lightgbm import parse_lightgbm
 from parser.sklearn import parse_sklearn
+from structure.TreeStructure import TreeStructure
+from typing import List
 
 
 def get_lgb_trees(X, y, **kwargs):
     clf = lgb.LGBMClassifier(n_estimators=5, objective='multiclass')
     clf.fit(X, y)
 
-    return parse_lightgbm(clf)
+    return parse_lightgbm(clf, **kwargs)
 
 
 def get_sklearn_trees(X, y, **kwargs):
@@ -32,11 +34,12 @@ def main():
     }
 
     tree_structures_sklearn = get_sklearn_trees(X, y, **additional_data)
-    # tree_structures_lgb = get_lgb_trees(X, y, **additional_data)
+    tree_structures_lgb = get_lgb_trees(X, y, **additional_data)
 
-    # for i, tree_structure in enumerate(tree_structures_lgb):
-    for i, tree_structure in enumerate(tree_structures_sklearn):
-        tree_path = os.path.join('plots', f'tree_{i + 1}.png')
+    structures: List[TreeStructure] = tree_structures_sklearn + tree_structures_lgb
+
+    for i, tree_structure in enumerate(structures):
+        tree_path = os.path.join('plots', f'tree_{tree_structure.clf_type}_{i + 1}.png')
         tree_structure.draw(tree_path)
 
 

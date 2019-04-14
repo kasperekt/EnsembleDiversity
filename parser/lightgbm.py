@@ -1,7 +1,5 @@
-from typing import List
-
 from lightgbm import LGBMClassifier
-from structure.TreeStructure import TreeStructure
+from structure.LGBTreeStructure import LGBTreeStructure
 from structure.utils import is_split, is_leaf
 
 
@@ -14,14 +12,13 @@ def node_index_of(child: dict):
         raise ValueError('Child is not a valid structure')
 
 
-def parse_tree(tree: dict, feature_names: List[str]) -> TreeStructure:
-    return_tree = TreeStructure(feature_names)
+def parse_tree(tree: dict, feature_names, target_names) -> LGBTreeStructure:
+    return_tree = LGBTreeStructure(feature_names, target_names)
 
     def traverse(structure):
         if is_leaf(structure):
             return_tree.add_leaf(structure['leaf_index'],
-                                 structure['leaf_value'],
-                                 structure['leaf_count'])
+                                 structure['leaf_value'])
         elif is_split(structure):
             split_index = structure['split_index']
             decision_type = structure['decision_type']
@@ -48,11 +45,10 @@ def parse_tree(tree: dict, feature_names: List[str]) -> TreeStructure:
     return return_tree
 
 
-def parse_lightgbm(clf: LGBMClassifier):
+def parse_lightgbm(clf: LGBMClassifier, feature_names=None, target_names=None):
     json_object: dict = clf.booster_.dump_model()
-    feature_names: List[str] = json_object['feature_names']
     trees = json_object['tree_info']
 
-    structures = [parse_tree(tree, feature_names) for tree in trees]
+    structures = [parse_tree(tree, feature_names, target_names) for tree in trees]
 
     return structures
