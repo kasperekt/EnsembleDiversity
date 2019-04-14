@@ -37,9 +37,9 @@ class TreeStructure(object):
         parent_name = self.node_name(parent_idx)
         child_name = self.leaf_name(child_idx) if is_child_leaf else self.node_name(child_idx)
 
-        self.tree.add_edge(parent_name,
-                           child_name,
-                           threshold='HARDCODED')
+        threshold = self.tree.nodes[parent_name]['threshold']
+
+        self.tree.add_edge(parent_name, child_name, threshold=threshold)
 
     def num_nodes(self):
         return len(self.tree.nodes)

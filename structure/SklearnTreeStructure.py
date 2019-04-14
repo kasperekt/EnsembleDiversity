@@ -3,8 +3,8 @@ from .DatasetStructure import DatasetStructure
 
 
 class SklearnTreeStructure(TreeStructure):
-    def __init__(self, dataset: DatasetStructure):
-        super().__init__(dataset, clf_type="Sklearn")
+    def __init__(self, dataset: DatasetStructure, clf_type="Sklearn"):
+        super().__init__(dataset, clf_type=clf_type)
 
     def add_leaf(self, idx, target=-1, fraction=0.0):
         self.tree.add_node(self.leaf_name(idx), target=target, fraction=fraction, is_leaf=True, is_split=False)
