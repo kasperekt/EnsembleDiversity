@@ -5,10 +5,9 @@ from abc import abstractmethod
 
 
 class TreeStructure(object):
-    def __init__(self, feature_names, target_names, clf_type="n/d"):
+    def __init__(self, dataset, clf_type="n/d"):
         self.tree = nx.DiGraph()
-        self.feature_names = feature_names
-        self.target_names = target_names
+        self.dataset = dataset
         self.clf_type = clf_type
 
     @staticmethod
@@ -56,7 +55,7 @@ class TreeStructure(object):
         tree_copy = self.tree.copy()
         for node_idx, node_data in tree_copy.nodes(data=True):
             if node_data['is_split']:
-                feature = self.feature_names[node_data['feature']]
+                feature = self.dataset.feature_names[node_data['feature']]
                 decision_type = node_data['decision_type']
                 threshold = node_data['threshold']
                 node_data['label'] = f'{feature}\n{decision_type}\n{threshold}'

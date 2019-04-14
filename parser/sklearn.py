@@ -3,19 +3,15 @@ import numpy as np
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import AdaBoostClassifier
 from structure.SklearnTreeStructure import SklearnTreeStructure
-from typing import List
+from structure.DatasetStructure import DatasetStructure
 
 
-def parse_tree(decision_tree: DecisionTreeClassifier, feature_names: List[str], target_names: List[str]):
-    '''
-    What does "-2", "-1" mean for thresholds, etc.
-    '''
-    tree_structure = SklearnTreeStructure(feature_names, target_names)
+def parse_tree(decision_tree: DecisionTreeClassifier, dataset: DatasetStructure):
+    tree_structure = SklearnTreeStructure(dataset)
 
     children_left = decision_tree.tree_.children_left
     children_right = decision_tree.tree_.children_right
     threshold = decision_tree.tree_.threshold
-    # features = [feature_names[i] for i in decision_tree.tree_.feature]
     features = decision_tree.tree_.feature
     value = decision_tree.tree_.value
 
@@ -54,11 +50,11 @@ def parse_tree(decision_tree: DecisionTreeClassifier, feature_names: List[str], 
 # https://towardsdatascience.com/uncover-the-structure-of-tree-ensembles-in-python-a01f72ea54a2
 # https://www.garysieling.com/blog/convert-scikit-learn-decision-trees-json
 # http://chrisstrelioff.ws/sandbox/2015/06/08/decision_trees_in_python_with_scikit_learn_and_pandas.html
-def parse_sklearn(clf: AdaBoostClassifier, feature_names, target_names):
+def parse_sklearn(clf: AdaBoostClassifier, dataset: DatasetStructure):
     structures = []
 
     for tree in clf.estimators_:
-        tree_structure = parse_tree(tree, feature_names, target_names)
+        tree_structure = parse_tree(tree, dataset)
         structures.append(tree_structure)
 
     return structures

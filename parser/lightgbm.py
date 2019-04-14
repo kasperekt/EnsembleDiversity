@@ -1,5 +1,6 @@
 from lightgbm import LGBMClassifier
 from structure.LGBTreeStructure import LGBTreeStructure
+from structure.DatasetStructure import DatasetStructure
 from structure.utils import is_split, is_leaf
 
 
@@ -12,8 +13,8 @@ def node_index_of(child: dict):
         raise ValueError('Child is not a valid structure')
 
 
-def parse_tree(tree: dict, feature_names, target_names) -> LGBTreeStructure:
-    return_tree = LGBTreeStructure(feature_names, target_names)
+def parse_tree(tree: dict, dataset: DatasetStructure) -> LGBTreeStructure:
+    return_tree = LGBTreeStructure(dataset)
 
     def traverse(structure):
         if is_leaf(structure):
@@ -45,10 +46,10 @@ def parse_tree(tree: dict, feature_names, target_names) -> LGBTreeStructure:
     return return_tree
 
 
-def parse_lightgbm(clf: LGBMClassifier, feature_names=None, target_names=None):
+def parse_lightgbm(clf: LGBMClassifier, dataset: DatasetStructure):
     json_object: dict = clf.booster_.dump_model()
     trees = json_object['tree_info']
 
-    structures = [parse_tree(tree, feature_names, target_names) for tree in trees]
+    structures = [parse_tree(tree, dataset) for tree in trees]
 
     return structures

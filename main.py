@@ -5,36 +5,32 @@ from sklearn.datasets import load_iris
 from sklearn.ensemble import AdaBoostClassifier
 from parser.lightgbm import parse_lightgbm
 from parser.sklearn import parse_sklearn
+from structure.DatasetStructure import DatasetStructure
 from structure.TreeStructure import TreeStructure
 from typing import List
 
 
-def get_lgb_trees(X, y, **kwargs):
+def get_lgb_trees(dataset: DatasetStructure):
     clf = lgb.LGBMClassifier(n_estimators=5, objective='multiclass')
-    clf.fit(X, y)
+    clf.fit(dataset.X, dataset.y)
 
-    return parse_lightgbm(clf, **kwargs)
+    return parse_lightgbm(clf, dataset)
 
 
-def get_sklearn_trees(X, y, **kwargs):
-    tree = DecisionTreeClassifier(max_depth=3)
+def get_sklearn_trees(dataset: DatasetStructure):
+    tree = DecisionTreeClassifier(max_depth=2)
     clf = AdaBoostClassifier(base_estimator=tree, n_estimators=5)
-    clf.fit(X, y)
+    clf.fit(dataset.X, dataset.y)
 
-    return parse_sklearn(clf, **kwargs)
+    return parse_sklearn(clf, dataset)
 
 
 def main():
     iris = load_iris()
-    X, y = iris.data, iris.target
+    iris_data = DatasetStructure(iris.data, iris.target, iris.feature_names, iris.target_names)
 
-    additional_data = {
-        'feature_names': iris.feature_names,
-        'target_names': iris.target_names
-    }
-
-    tree_structures_sklearn = get_sklearn_trees(X, y, **additional_data)
-    tree_structures_lgb = get_lgb_trees(X, y, **additional_data)
+    tree_structures_sklearn = get_sklearn_trees(iris_data)
+    tree_structures_lgb = get_lgb_trees(iris_data)
 
     structures: List[TreeStructure] = tree_structures_sklearn + tree_structures_lgb
 
