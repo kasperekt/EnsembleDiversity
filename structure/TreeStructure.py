@@ -1,14 +1,14 @@
 import networkx as nx
 import pygraphviz as pgv
 
-from typing import List
-from structure.utils import is_leaf
+from abc import abstractmethod
 
 
-class TreeStructure:
-    def __init__(self, feature_names: List[str]):
+class TreeStructure(object):
+    def __init__(self, dataset, clf_type="n/d"):
         self.tree = nx.DiGraph()
-        self.feature_names = feature_names
+        self.dataset = dataset
+        self.clf_type = clf_type
 
     @staticmethod
     def node_name(idx: int):
@@ -26,17 +26,20 @@ class TreeStructure:
                            is_split=True,
                            is_leaf=False)
 
-    def add_leaf(self, idx: int, value: float, count: int):
+    @abstractmethod
+    def add_leaf(self, idx: int, **kwargs):
         self.tree.add_node(self.leaf_name(idx),
-                           value=value,
-                           count=count,
+                           **kwargs,
                            is_split=False,
                            is_leaf=True)
 
-    def add_edge(self, parent: dict, child: dict):
-        parent_idx = self.node_name(parent['split_index'])
-        child_idx = self.leaf_name(child['leaf_index']) if is_leaf(child) else self.node_name(child['split_index'])
-        self.tree.add_edge(parent_idx, child_idx, threshold='HARDCODED')
+    def add_edge(self, parent_idx: int, child_idx: int, is_child_leaf=False):
+        parent_name = self.node_name(parent_idx)
+        child_name = self.leaf_name(child_idx) if is_child_leaf else self.node_name(child_idx)
+
+        self.tree.add_edge(parent_name,
+                           child_name,
+                           threshold='HARDCODED')
 
     def num_nodes(self):
         return len(self.tree.nodes)
@@ -44,16 +47,20 @@ class TreeStructure:
     def num_edges(self):
         return len(self.tree.edges)
 
+    @abstractmethod
+    def leaf_label(self, node_data: dict):
+        raise NotImplementedError('"leaf_label" method is not implemented')
+
     def draw(self, path: str):
         tree_copy = self.tree.copy()
         for node_idx, node_data in tree_copy.nodes(data=True):
             if node_data['is_split']:
-                feature = self.feature_names[node_data['feature']]
+                feature = self.dataset.feature_names[node_data['feature']]
                 decision_type = node_data['decision_type']
                 threshold = node_data['threshold']
                 node_data['label'] = f'{feature}\n{decision_type}\n{threshold}'
             elif node_data['is_leaf']:
-                node_data['label'] = node_data['value']
+                node_data['label'] = self.leaf_label(node_data)
 
         graph_str = str(nx.nx_agraph.to_agraph(tree_copy))
         pgv_graph = pgv.AGraph(graph_str)
