@@ -3,6 +3,7 @@ import numpy as np
 from sklearn.ensemble import AdaBoostClassifier, BaggingClassifier
 from parser.sklearn import parse_tree
 from typing import Union
+from predict import majority_voting
 from .Dataset import Dataset
 
 
@@ -25,6 +26,8 @@ class SklearnEnsemble:
         if len(self.trees) == 0:
             raise ValueError('There are no trees available')
 
-        preds = np.array([tree.predict(data) for tree in self.trees])
+        # TODO: Doesn't work - very different predictions
+        predictions = np.array([tree.predict(data) for tree in self.trees])
+        predictions = np.rollaxis(predictions, axis=1)
 
-        return preds
+        return majority_voting(predictions)
