@@ -6,17 +6,12 @@ from sklearn.ensemble import AdaBoostClassifier, BaggingClassifier
 
 from .Dataset import Dataset
 from .SklearnTree import SklearnTree
+from .Ensemble import Ensemble
 
 
-class SklearnEnsemble:
+class SklearnEnsemble(Ensemble):
     def __init__(self, clf: Union[AdaBoostClassifier, BaggingClassifier], name='Sklearn'):
-        self.trees = []
-        self.clf = clf
-        self.name = name
-
-    def __iter__(self):
-        for tree in self.trees:
-            yield tree
+        super().__init__(clf, name)
 
     def fit(self, dataset: Dataset):
         self.clf.fit(dataset.X, dataset.y)

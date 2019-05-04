@@ -57,30 +57,29 @@ class SklearnTree(Tree):
         target_name = self.dataset.target_names[target] if target != -1 else 'n/d'
         return f"{target_name}\n{node_data['fraction']}"
 
+    def predict_traverse(self, X, node_idx):
+        node = self.tree.nodes[node_idx]
+        threshold = node['threshold']
+        feature = node['feature']
+
+        left_child_idx, right_child_idx = list(self.tree.successors(node_idx))
+
+        if X[feature] <= threshold:
+            child = self.tree.nodes[left_child_idx]
+
+            if child['is_leaf']:
+                return child['target']
+
+            return self.predict_traverse(X, left_child_idx)
+        else:
+            child = self.tree.nodes[right_child_idx]
+
+            if child['is_leaf']:
+                return child['target']
+
+            return self.predict_traverse(X, right_child_idx)
+
     # TODO: Move "recurse" to method
     def predict(self, data: np.ndarray) -> np.ndarray:
         root_idx = self.node_name(0)
-
-        def recurse(X, node_idx):
-            node = self.tree.nodes[node_idx]
-            threshold = node['threshold']
-            feature = node['feature']
-
-            left_child_idx, right_child_idx = list(self.tree.successors(node_idx))
-
-            if X[feature] <= threshold:
-                child = self.tree.nodes[left_child_idx]
-
-                if child['is_leaf']:
-                    return child['target']
-
-                return recurse(X, left_child_idx)
-            else:
-                child = self.tree.nodes[right_child_idx]
-
-                if child['is_leaf']:
-                    return child['target']
-
-                return recurse(X, right_child_idx)
-
-        return np.array([recurse(X, root_idx) for X in data], dtype=np.int)
+        return np.array([self.predict_traverse(X, root_idx) for X in data], dtype=np.int)

@@ -2,20 +2,15 @@ import numpy as np
 import lightgbm as lgb
 
 from scipy.special import softmax
+from .Ensemble import Ensemble
 from .Dataset import Dataset
 from .LGBTree import LGBTree
 
 
-class LGBEnsemble:
+class LGBEnsemble(Ensemble):
     def __init__(self, clf: lgb.LGBMClassifier, name='Sklearn'):
-        self.trees = []
-        self.clf = clf
-        self.name = name
-
-    def __iter__(self):
-        for tree in self.trees:
-            yield tree
-
+        super().__init__(clf, name)
+    
     def fit(self, dataset: Dataset):
         self.clf.fit(dataset.X, dataset.y)
 
