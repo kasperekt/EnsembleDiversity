@@ -3,7 +3,7 @@ import lightgbm as lgb
 
 from scipy.special import softmax
 from .Dataset import Dataset
-from parser.lightgbm import parse_tree
+from .LGBTree import LGBTree
 
 
 class LGBEnsemble:
@@ -12,12 +12,17 @@ class LGBEnsemble:
         self.clf = clf
         self.name = name
 
+    def __iter__(self):
+        for tree in self.trees:
+            yield tree
+
     def fit(self, dataset: Dataset):
         self.clf.fit(dataset.X, dataset.y)
 
         json_object: dict = self.clf.booster_.dump_model()
         trees = json_object['tree_info']
-        self.trees = [parse_tree(tree, dataset) for tree in trees]
+
+        self.trees = [LGBTree.parse(tree, dataset) for tree in trees]
 
     def predict(self, X: np.ndarray) -> np.ndarray:
         if len(self.trees) == 0:

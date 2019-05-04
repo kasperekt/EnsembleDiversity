@@ -1,9 +1,9 @@
 import lightgbm as lgb
+
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import AdaBoostClassifier, RandomForestClassifier
-from parser.lightgbm import parse_lightgbm
-from parser.sklearn import parse_sklearn
-from structure.Dataset import Dataset
+
+from structure import Dataset, SklearnEnsemble, LGBEnsemble
 
 
 def get_lgb_trees(dataset: Dataset, **params):
@@ -14,9 +14,10 @@ def get_lgb_trees(dataset: Dataset, **params):
     }
 
     clf = lgb.LGBMClassifier(**final_params, objective='multiclass')
-    clf.fit(dataset.X, dataset.y)
+    ensemble = LGBEnsemble(clf, "LGBTrees")
+    ensemble.fit(dataset)
 
-    return parse_lightgbm(clf, dataset)
+    return ensemble
 
 
 def get_lgb_rf_trees(dataset: Dataset, **params):
@@ -31,9 +32,10 @@ def get_lgb_rf_trees(dataset: Dataset, **params):
     }
 
     clf = lgb.LGBMClassifier(**final_params)
-    clf.fit(dataset.X, dataset.y)
+    ensemble = LGBEnsemble(clf, "LGBTrees")
+    ensemble.fit(dataset)
 
-    return parse_lightgbm(clf, dataset)
+    return ensemble
 
 
 def get_adaboost_trees(dataset: Dataset, max_depth=5, **params):
@@ -44,9 +46,10 @@ def get_adaboost_trees(dataset: Dataset, max_depth=5, **params):
 
     tree = DecisionTreeClassifier(max_depth=max_depth)
     clf = AdaBoostClassifier(**final_params, base_estimator=tree)
-    clf.fit(dataset.X, dataset.y)
+    ensemble = SklearnEnsemble(clf, "AdaBoost")
+    ensemble.fit(dataset)
 
-    return parse_sklearn(clf, dataset, "AdaBoost")
+    return ensemble
 
 
 def get_rf_trees(dataset: Dataset, **params):
@@ -57,6 +60,7 @@ def get_rf_trees(dataset: Dataset, **params):
     }
 
     clf = RandomForestClassifier(**final_params)
-    clf.fit(dataset.X, dataset.y)
+    ensemble = SklearnEnsemble(clf, "RF")
+    ensemble.fit(dataset)
 
-    return parse_sklearn(clf, dataset, "RandomForest")
+    return ensemble

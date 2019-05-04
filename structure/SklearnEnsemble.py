@@ -1,10 +1,11 @@
 import numpy as np
 
-from sklearn.ensemble import AdaBoostClassifier, BaggingClassifier
-from parser.sklearn import parse_tree
 from typing import Union
 from predict import majority_voting
+from sklearn.ensemble import AdaBoostClassifier, BaggingClassifier
+
 from .Dataset import Dataset
+from .SklearnTree import SklearnTree
 
 
 class SklearnEnsemble:
@@ -13,14 +14,13 @@ class SklearnEnsemble:
         self.clf = clf
         self.name = name
 
+    def __iter__(self):
+        for tree in self.trees:
+            yield tree
+
     def fit(self, dataset: Dataset):
         self.clf.fit(dataset.X, dataset.y)
-
-        self.trees = []
-
-        for tree in self.clf.estimators_:
-            tree_structure = parse_tree(tree, dataset, self.name)
-            self.trees.append(tree_structure)
+        self.trees = [SklearnTree.parse(tree, dataset) for tree in self.clf.estimators_]
 
     def predict(self, data: np.ndarray) -> np.ndarray:
         if len(self.trees) == 0:
