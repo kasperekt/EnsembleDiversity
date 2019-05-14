@@ -15,7 +15,8 @@ class LGBExperiment(Experiment):
         self.param_grid = ParameterGrid({
             'n_estimators': range(10, 100, 10),
             'max_depth': range(2, 10),
-            'learning_rate': [0.1, 0.05, 0.03, 0.01, 0.005, 0.003, 0.001]
+            'num_leaves': range(30, 50, 2),
+            'learning_rate': [0.1, 0.05, 0.03]
         })
 
     def pick_objective(self, dataset: Dataset) -> str:
