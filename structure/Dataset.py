@@ -25,8 +25,8 @@ class Dataset(object):
             self.X, self.y, test_size=test_size)
 
         train_dataset = Dataset(
-            X_train, y_train, self.feature_names, self.target_names)
+            X_train, y_train, self.feature_names, self.target_names, name=self.name)
         val_dataset = Dataset(
-            X_val, y_val, self.feature_names, self.target_names)
+            X_val, y_val, self.feature_names, self.target_names, name=self.name)
 
         return train_dataset, val_dataset

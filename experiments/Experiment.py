@@ -1,24 +1,26 @@
 import pandas as pd
 
+from abc import ABCMeta, abstractmethod
 from typing import List, Dict
 from structure import Ensemble, Dataset
 from collections import namedtuple
 
-Result = namedtuple('Results', [
-    'name', 'dataset_name', 'accuracy', 'node_diversity'])
 
-
-class Experiment(object):
-    def __init__(self, datasets: List[Dataset]):
+class Experiment(metaclass=ABCMeta):
+    def __init__(self):
         self.ensembles: List[Ensemble] = []
-        self.results: List[Result] = []
+        self.results: List[any] = []
 
     def reset(self):
         self.ensembles = []
         self.results = []
 
+    @abstractmethod
+    def run(self, train_data: List[Dataset], val_data: List[Dataset]):
+        raise NotImplementedError
+
     def add_result(self, **kwargs):
-        result = Result(**kwargs)
+        result = {**kwargs}
         self.results.append(result)
 
     def to_csv(self, filepath: str):
