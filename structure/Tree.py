@@ -42,7 +42,8 @@ class Tree(object):
 
     def add_edge(self, parent_idx: int, child_idx: int, is_child_leaf=False):
         parent_name = self.node_name(parent_idx)
-        child_name = self.leaf_name(child_idx) if is_child_leaf else self.node_name(child_idx)
+        child_name = self.leaf_name(
+            child_idx) if is_child_leaf else self.node_name(child_idx)
 
         threshold = self.tree.nodes[parent_name]['threshold']
 
@@ -51,7 +52,7 @@ class Tree(object):
     def edge_label(self):
         return
 
-    def num_nodes(self):
+    def num_nodes(self) -> int:
         return len(self.tree.nodes)
 
     def num_edges(self):
@@ -59,7 +60,8 @@ class Tree(object):
 
     def draw(self, path: str):
         tree_copy = self.tree.copy()
-        for node_idx, node_data in tree_copy.nodes(data=True):
+
+        for _, node_data in tree_copy.nodes(data=True):
             if node_data['is_leaf']:
                 node_data['label'] = self.leaf_label(node_data)
             else:

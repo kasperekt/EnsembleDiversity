@@ -1,32 +1,53 @@
 import os
 
-from sklearn.datasets import load_iris
+from experiments import LGBExperiment
+from structure import Tree, Dataset, AdaboostEnsemble, RandomForestEnsemble, LGBEnsemble
+from config import OUT_DIR
 from typing import List
-
-from structure.Dataset import Dataset
-from structure.Tree import Tree
-from extract import get_rf_trees, get_lgb_trees, get_adaboost_trees
+from sklearn.datasets import load_iris, load_breast_cancer
 
 
 def draw_trees(structures: List[Tree]):
     for i, tree_structure in enumerate(structures):
-        tree_path = os.path.join('plots', f'tree_{tree_structure.clf_type.lower()}_{i + 1}.png')
+        tree_path = os.path.join(
+            'plots', f'tree_{tree_structure.clf_type.lower()}_{i + 1}.png')
         tree_structure.draw(tree_path)
 
 
 def draw():
-    iris = load_iris()
-    iris_data = Dataset(iris.data, iris.target, iris.feature_names, iris.target_names)
+    iris_data = Dataset.from_sklearn("iris", load_iris())
 
-    n = 10
-    tree_structures_lgb = get_lgb_trees(iris_data, n_estimators=n, max_depth=2)
-    tree_structures_adaboost = get_adaboost_trees(iris_data, n_estimators=n, max_depth=2)
-    tree_structures_rf = get_rf_trees(iris_data, n_estimators=n, max_depth=2)
+    general_params = {
+        'n_estimators': 10,
+        'max_depth': 3
+    }
 
-    draw_trees(tree_structures_lgb)
-    draw_trees(tree_structures_adaboost)
-    draw_trees(tree_structures_rf)
+    lgb_ensemble = LGBEnsemble(general_params)
+    lgb_ensemble.fit(iris_data)
+
+    adaboost_ensemble = AdaboostEnsemble(general_params)
+    adaboost_ensemble.fit(iris_data)
+
+    rf_ensemble = RandomForestEnsemble(general_params)
+    rf_ensemble.fit(iris_data)
+
+    draw_trees(lgb_ensemble.trees)
+    draw_trees(adaboost_ensemble.trees)
+    draw_trees(rf_ensemble.trees)
+
+
+def run_experiment():
+    iris_train, iris_val = Dataset.from_sklearn("iris", load_iris()).split()
+    cancer_train, cancer_val = Dataset.from_sklearn("cancer",
+                                                    load_breast_cancer()).split()
+
+    train_datasets = [iris_train, cancer_train]
+    val_datasets = [iris_val, cancer_val]
+
+    exp = LGBExperiment(train_datasets)
+    exp.run(train_datasets, val_datasets)
+    exp.to_csv(os.path.join(OUT_DIR, 'lgb-ensemble.csv'))
 
 
 if __name__ == '__main__':
-    draw()
+    run_experiment()
