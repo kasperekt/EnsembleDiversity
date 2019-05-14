@@ -1,43 +1,56 @@
 import os
-import lightgbm as lgb
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.datasets import load_iris
-from sklearn.ensemble import AdaBoostClassifier
-from parser.lightgbm import parse_lightgbm
-from parser.sklearn import parse_sklearn
-from structure.DatasetStructure import DatasetStructure
-from structure.TreeStructure import TreeStructure
+
+from experiments import LGBExperiment, AdaboostExperiment, RandomForestExperiment
+from structure import Tree, Dataset, AdaboostEnsemble, RandomForestEnsemble, LGBEnsemble
+from config import OUT_DIR
 from typing import List
+from sklearn.datasets import load_iris, load_breast_cancer
 
 
-def get_lgb_trees(dataset: DatasetStructure):
-    clf = lgb.LGBMClassifier(n_estimators=5, objective='multiclass')
-    clf.fit(dataset.X, dataset.y)
-
-    return parse_lightgbm(clf, dataset)
-
-
-def get_sklearn_trees(dataset: DatasetStructure):
-    tree = DecisionTreeClassifier(max_depth=2)
-    clf = AdaBoostClassifier(base_estimator=tree, n_estimators=5)
-    clf.fit(dataset.X, dataset.y)
-
-    return parse_sklearn(clf, dataset)
-
-
-def main():
-    iris = load_iris()
-    iris_data = DatasetStructure(iris.data, iris.target, iris.feature_names, iris.target_names)
-
-    tree_structures_sklearn = get_sklearn_trees(iris_data)
-    tree_structures_lgb = get_lgb_trees(iris_data)
-
-    structures: List[TreeStructure] = tree_structures_sklearn + tree_structures_lgb
-
+def draw_trees(structures: List[Tree]):
     for i, tree_structure in enumerate(structures):
-        tree_path = os.path.join('plots', f'tree_{tree_structure.clf_type}_{i + 1}.png')
+        tree_path = os.path.join(
+            'plots', f'tree_{tree_structure.clf_type.lower()}_{i + 1}.png')
         tree_structure.draw(tree_path)
 
 
+def draw():
+    iris_data = Dataset.from_sklearn("iris", load_iris())
+
+    general_params = {
+        'n_estimators': 10,
+        'max_depth': 3
+    }
+
+    lgb_ensemble = LGBEnsemble(general_params)
+    lgb_ensemble.fit(iris_data)
+
+    adaboost_ensemble = AdaboostEnsemble(general_params)
+    adaboost_ensemble.fit(iris_data)
+
+    rf_ensemble = RandomForestEnsemble(general_params)
+    rf_ensemble.fit(iris_data)
+
+    draw_trees(lgb_ensemble.trees)
+    draw_trees(adaboost_ensemble.trees)
+    draw_trees(rf_ensemble.trees)
+
+
+def run_experiment():
+    iris_train, iris_val = Dataset.from_sklearn("iris", load_iris()).split(0.5)
+    cancer_train, cancer_val = Dataset.from_sklearn("cancer",
+                                                    load_breast_cancer()).split(0.5)
+
+    train_datasets = [iris_train, cancer_train]
+    val_datasets = [iris_val, cancer_val]
+
+    experiments = [LGBExperiment(), AdaboostExperiment(),
+                   RandomForestExperiment()]
+
+    for exp in experiments:
+        exp.run(train_datasets, val_datasets)
+        exp.to_csv(os.path.join(OUT_DIR, f'{exp.name.lower()}-ensemble.csv'))
+
+
 if __name__ == '__main__':
-    main()
+    run_experiment()
