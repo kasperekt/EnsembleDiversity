@@ -40,24 +40,28 @@ class SklearnTree(Tree):
                                             right_child,
                                             is_child_leaf=threshold[right_child] == -2)
             else:
-                target = value[node]
-                for i, v in zip(np.nonzero(target)[1], target[np.nonzero(target)]):
-                    # TODO: last param in add_leaf should be count
-                    tree_structure.add_leaf(node, target=i, fraction=v)
+                target = value[node, 0]
+                target_class = np.argmax(target)
+                tree_structure.add_leaf(
+                    node, target=target_class, fraction=target_class)
+                # for i, v in zip(np.nonzero(target)[1], target[np.nonzero(target)]):
+                #     # TODO: last param in add_leaf should be count
+                #     tree_structure.add_leaf(node, target=i, fraction=v)
 
         traverse(0)
 
         return tree_structure
 
     def add_leaf(self, idx, target=-1, fraction=0.0):
-        self.tree.add_node(self.leaf_name(idx), target=target, fraction=fraction, is_leaf=True)
+        self.tree.add_node(self.leaf_name(idx), target=target,
+                           fraction=fraction, is_leaf=True)
 
     def leaf_label(self, node_data: dict) -> str:
         target = node_data['target']
         target_name = self.dataset.target_names[target] if target != -1 else 'n/d'
         return f"{target_name}\n{node_data['fraction']}"
 
-    def predict_traverse(self, X, node_idx):
+    def predict_traverse(self, X, node_idx, verbose=False):
         node = self.tree.nodes[node_idx]
         threshold = node['threshold']
         feature = node['feature']
@@ -65,21 +69,33 @@ class SklearnTree(Tree):
         left_child_idx, right_child_idx = list(self.tree.successors(node_idx))
 
         if X[feature] <= threshold:
+            if verbose:
+                print(f'LEFT - X[{feature}]: {X[feature]} <= {threshold}')
+
             child = self.tree.nodes[left_child_idx]
 
             if child['is_leaf']:
+                if verbose:
+                    print(f'LEFT - Is leaf! Target = {child["target"]}')
+
                 return child['target']
 
-            return self.predict_traverse(X, left_child_idx)
+            return self.predict_traverse(X, left_child_idx, verbose=verbose)
         else:
+            if verbose:
+                print(f'RIGHT - X[{feature}]: {X[feature]} > {threshold}')
+
             child = self.tree.nodes[right_child_idx]
 
             if child['is_leaf']:
+                if verbose:
+                    print(f'RIGHT - Is leaf! Target = {child["target"]}')
+
                 return child['target']
 
-            return self.predict_traverse(X, right_child_idx)
+            return self.predict_traverse(X, right_child_idx, verbose=verbose)
 
     # TODO: Move "recurse" to method
-    def predict(self, data: np.ndarray) -> np.ndarray:
+    def predict(self, data: np.ndarray, verbose=False) -> np.ndarray:
         root_idx = self.node_name(0)
-        return np.array([self.predict_traverse(X, root_idx) for X in data], dtype=np.int)
+        return np.array([self.predict_traverse(X, root_idx, verbose=verbose) for X in data], dtype=np.int)

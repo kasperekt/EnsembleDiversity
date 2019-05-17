@@ -1,4 +1,5 @@
 from sklearn.model_selection import train_test_split
+from sklearn.datasets import load_iris, load_breast_cancer
 
 
 class Dataset(object):
@@ -13,6 +14,14 @@ class Dataset(object):
     def from_sklearn(name, dataset):
         return Dataset(dataset.data, dataset.target,
                        dataset.feature_names, dataset.target_names, name=name)
+
+    @staticmethod
+    def create_iris():
+        return Dataset.from_sklearn('iris', load_iris())
+
+    @staticmethod
+    def create_cancer():
+        return Dataset.from_sklearn('cancer', load_breast_cancer())
 
     def size(self):
         return len(self.X)
