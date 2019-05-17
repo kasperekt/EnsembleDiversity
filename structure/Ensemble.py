@@ -24,6 +24,12 @@ class Ensemble(metaclass=ABCMeta):
         node_counts = np.array([tree.num_nodes() for tree in self.trees])
         return node_counts.std()
 
+    def clf_predict(self, X: np.ndarray) -> np.ndarray:
+        if self.clf is None:
+            raise ValueError('"clf" should be fitted')
+
+        return self.clf.predict(X)
+
     @abstractmethod
     def predict(self, X: np.ndarray) -> np.ndarray:
         pass
