@@ -1,4 +1,4 @@
-from .SklearnEnsemble import SklearnEnsemble
+from . import SklearnEnsemble
 from sklearn.ensemble import RandomForestClassifier
 
 

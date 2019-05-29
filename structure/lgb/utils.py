@@ -4,3 +4,10 @@ def is_leaf(structure: dict) -> bool:
 
 def is_split(structure: dict) -> bool:
     return 'split_index' in structure
+
+
+def node_index_of(child: dict):
+    if is_leaf(child):
+        return child['leaf_index']
+    elif is_split(child):
+        return child['split_index']

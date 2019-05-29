@@ -2,11 +2,20 @@ from .Dataset import Dataset
 from .Ensemble import Ensemble
 from .Tree import Tree
 
-from .LGBEnsemble import LGBEnsemble
-from .LGBTree import LGBTree
+from .catboost import *
+from .lgb import *
+from .sklearn import *
 
-from .SklearnEnsemble import SklearnEnsemble
-from .SklearnTree import SklearnTree
-
-from .AdaboostEnsemble import *
-from .RandomForestEnsemble import *
+__all__ = [
+    'Dataset',
+    'Ensemble',
+    'Tree',
+    'LGBEnsemble',
+    'LGBTree',
+    'SklearnEnsemble',
+    'SklearnTree',
+    'AdaboostEnsemble',
+    'RandomForestEnsemble',
+    'CatboostTree',
+    'CatboostEnsemble'
+]

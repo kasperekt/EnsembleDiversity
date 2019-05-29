@@ -1,10 +1,9 @@
 import numpy as np
 
+from . import SklearnEnsemble, SklearnTree
+from structure import Dataset
 from sklearn.ensemble import AdaBoostClassifier
 from sklearn.tree import DecisionTreeClassifier
-from .SklearnEnsemble import SklearnEnsemble
-from .SklearnTree import SklearnTree
-from .Dataset import Dataset
 
 
 class AdaboostEnsemble(SklearnEnsemble):

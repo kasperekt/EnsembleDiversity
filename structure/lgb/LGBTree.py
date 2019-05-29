@@ -1,15 +1,7 @@
 import numpy as np
 
-from .Tree import Tree
-from .Dataset import Dataset
-from .utils import is_leaf, is_split
-
-
-def node_index_of(child: dict):
-    if is_leaf(child):
-        return child['leaf_index']
-    elif is_split(child):
-        return child['split_index']
+from .utils import node_index_of, is_leaf, is_split
+from structure import Dataset, Tree
 
 
 class LGBTree(Tree):
@@ -30,7 +22,8 @@ class LGBTree(Tree):
                 split_feature = structure['split_feature']
                 threshold = structure['threshold']
 
-                return_tree.add_split(split_index, decision_type, split_feature, threshold)
+                return_tree.add_split(
+                    split_index, decision_type, split_feature, threshold)
 
                 left_child = structure['left_child']
                 right_child = structure['right_child']
@@ -63,7 +56,8 @@ class LGBTree(Tree):
             threshold = node['threshold']
             feature = node['feature']
 
-            left_child_idx, right_child_idx = list(self.tree.successors(node_idx))
+            left_child_idx, right_child_idx = list(
+                self.tree.successors(node_idx))
 
             # TODO: Use decision_type info for condition
             if X[feature] <= threshold:
