@@ -30,7 +30,8 @@ class LGBTree(Tree):
                 split_feature = structure['split_feature']
                 threshold = structure['threshold']
 
-                return_tree.add_split(split_index, decision_type, split_feature, threshold)
+                return_tree.add_split(
+                    split_index, decision_type, split_feature, threshold)
 
                 left_child = structure['left_child']
                 right_child = structure['right_child']
@@ -63,7 +64,8 @@ class LGBTree(Tree):
             threshold = node['threshold']
             feature = node['feature']
 
-            left_child_idx, right_child_idx = list(self.tree.successors(node_idx))
+            left_child_idx, right_child_idx = list(
+                self.tree.successors(node_idx))
 
             # TODO: Use decision_type info for condition
             if X[feature] <= threshold:

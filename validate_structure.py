@@ -2,7 +2,7 @@ import sys
 import numpy as np
 
 from typing import Tuple
-from structure import Dataset, AdaboostEnsemble, RandomForestEnsemble, LGBEnsemble
+from structure import Dataset, AdaboostEnsemble, RandomForestEnsemble, LGBEnsemble, CatboostEnsemble
 from sklearn.datasets import load_iris, load_breast_cancer
 from sklearn.model_selection import ParameterGrid
 from sklearn.metrics import accuracy_score
@@ -44,6 +44,10 @@ def validate_lgb(*args, **kwargs):
     return validate(LGBEnsemble, 'LGB', *args, **kwargs)
 
 
+def validate_cb(*args, **kwargs):
+    return validate(CatboostEnsemble, 'Catboost', *args, **kwargs)
+
+
 def validate_structure(used_validators={'ada', 'rf'}, verbose=False):
     iris = Dataset.create_iris().split(test_size=0.5)
     cancer = Dataset.create_cancer().split(test_size=0.5)
@@ -57,7 +61,8 @@ def validate_structure(used_validators={'ada', 'rf'}, verbose=False):
     validators = {
         'ada': validate_ada,
         'rf': validate_rf,
-        'lgb': validate_lgb
+        'lgb': validate_lgb,
+        'cb': validate_cb
     }
 
     for validator_key in used_validators:
