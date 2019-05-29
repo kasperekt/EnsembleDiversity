@@ -1,7 +1,7 @@
 import json
 import numpy as np
 
-from . import CatboostTree
+from .CatboostTree import CatboostTree
 from structure import Dataset, Ensemble
 from catboost import CatBoostClassifier
 from scipy.special import expit, softmax  # pylint: disable=no-name-in-module
@@ -14,7 +14,9 @@ class CatboostEnsemble(Ensemble):
         self.tmp_json_path = '/tmp/catboost.model.json'
 
     def fit(self, dataset: Dataset):
-        # self.clf.set_params() - pick objective??
+        loss_function = 'MultiClass' if dataset.num_classes() > 2 else 'Logloss'
+        self.clf.set_params(loss_function=loss_function, verbose=False)
+
         self.clf.fit(dataset.X, dataset.y)
 
         self.clf.save_model(self.tmp_json_path, format='json')
@@ -36,7 +38,6 @@ class CatboostEnsemble(Ensemble):
         if n_classes > 2:
             results_proba = softmax(preds, axis=1)
         else:
-            print(preds)
             results_proba = np.array([[1 - v, v] for v in expit(preds)])
 
         return results_proba

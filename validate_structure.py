@@ -54,8 +54,8 @@ def validate_structure(used_validators={'ada', 'rf'}, verbose=False):
     datasets = [iris, cancer]
 
     param_grid = ParameterGrid({
-        'max_depth': range(2, 20),
-        'n_estimators': range(1, 30)
+        'max_depth': range(2, 5),
+        'n_estimators': range(1, 5)
     })
 
     validators = {
