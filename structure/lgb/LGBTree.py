@@ -1,15 +1,7 @@
 import numpy as np
 
-from .Tree import Tree
-from .Dataset import Dataset
-from .utils import is_leaf, is_split
-
-
-def node_index_of(child: dict):
-    if is_leaf(child):
-        return child['leaf_index']
-    elif is_split(child):
-        return child['split_index']
+from .utils import node_index_of, is_leaf, is_split
+from structure import Dataset, Tree
 
 
 class LGBTree(Tree):

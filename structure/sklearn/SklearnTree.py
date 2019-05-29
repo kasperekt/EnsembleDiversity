@@ -1,8 +1,7 @@
 import numpy as np
 
 from sklearn.tree import DecisionTreeClassifier
-from .Tree import Tree
-from .Dataset import Dataset
+from structure import Tree, Dataset
 
 
 class SklearnTree(Tree):

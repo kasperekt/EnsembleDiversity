@@ -2,17 +2,9 @@ from .Dataset import Dataset
 from .Ensemble import Ensemble
 from .Tree import Tree
 
-from .LGBEnsemble import LGBEnsemble
-from .LGBTree import LGBTree
-
-from .SklearnEnsemble import SklearnEnsemble
-from .SklearnTree import SklearnTree
-
-from .AdaboostEnsemble import *
-from .RandomForestEnsemble import *
-
-from .CatboostTree import CatboostTree
-from .CatboostEnsemble import CatboostEnsemble
+from .catboost import *
+from .lgb import *
+from .sklearn import *
 
 __all__ = [
     'Dataset',

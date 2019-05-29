@@ -1,7 +1,6 @@
 import numpy as np
 
-from .Tree import Tree
-from .Dataset import Dataset
+from structure import Tree, Dataset
 
 
 def split_idx_generator():

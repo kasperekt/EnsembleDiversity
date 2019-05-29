@@ -1,7 +1,8 @@
 import json
 import numpy as np
 
-from . import Dataset, Ensemble, CatboostTree
+from . import CatboostTree
+from structure import Dataset, Ensemble
 from catboost import CatBoostClassifier
 from scipy.special import expit, softmax  # pylint: disable=no-name-in-module
 
@@ -13,6 +14,7 @@ class CatboostEnsemble(Ensemble):
         self.tmp_json_path = '/tmp/catboost.model.json'
 
     def fit(self, dataset: Dataset):
+        # self.clf.set_params() - pick objective??
         self.clf.fit(dataset.X, dataset.y)
 
         self.clf.save_model(self.tmp_json_path, format='json')
