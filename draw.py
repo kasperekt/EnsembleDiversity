@@ -1,7 +1,7 @@
 import os
 
 from typing import List
-from structure import Dataset, Tree, AdaboostEnsemble, LGBEnsemble, RandomForestEnsemble
+from structure import Dataset, Tree, AdaboostEnsemble, LGBEnsemble, RandomForestEnsemble, CatboostEnsemble
 from sklearn.datasets import load_iris
 
 
@@ -20,18 +20,13 @@ def draw():
         'max_depth': 3
     }
 
-    lgb_ensemble = LGBEnsemble(general_params)
-    lgb_ensemble.fit(iris_data)
+    Types = [LGBEnsemble, AdaboostEnsemble,
+             RandomForestEnsemble, CatboostEnsemble]
 
-    adaboost_ensemble = AdaboostEnsemble(general_params)
-    adaboost_ensemble.fit(iris_data)
-
-    rf_ensemble = RandomForestEnsemble(general_params)
-    rf_ensemble.fit(iris_data)
-
-    draw_trees(lgb_ensemble.trees)
-    draw_trees(adaboost_ensemble.trees)
-    draw_trees(rf_ensemble.trees)
+    for Type in Types:
+        ensemble = Type(general_params)
+        ensemble.fit(iris_data)
+        draw_trees(ensemble.trees)
 
 
 if __name__ == '__main__':

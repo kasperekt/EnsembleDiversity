@@ -16,7 +16,7 @@ def divide_leaves(leaves, n_classes):
 
 
 class CatboostTree(Tree):
-    def __init__(self, dataset, clf_type='n/d'):
+    def __init__(self, dataset, clf_type='CatboostTree'):
         super().__init__(dataset, clf_type=clf_type)
 
     def leaf_label(self, node_data):
