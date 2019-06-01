@@ -17,9 +17,6 @@ class Ensemble(metaclass=ABCMeta):
         for tree in self.trees:
             yield tree
 
-    def fit(self, dataset: Dataset):
-        raise NotImplementedError
-
     def node_diversity(self) -> float:
         node_counts = np.array([tree.num_nodes() for tree in self.trees])
         return node_counts.std()
@@ -31,5 +28,9 @@ class Ensemble(metaclass=ABCMeta):
         return self.clf.predict(X)
 
     @abstractmethod
+    def fit(self, dataset: Dataset):
+        raise NotImplementedError
+
+    @abstractmethod
     def predict(self, X: np.ndarray) -> np.ndarray:
-        pass
+        raise NotImplementedError

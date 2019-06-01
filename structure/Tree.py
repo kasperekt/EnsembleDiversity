@@ -58,6 +58,18 @@ class Tree(object):
     def num_edges(self):
         return len(self.tree.edges)
 
+    def satisfies_cond(self, cond_type, lvalue, rvalue):
+        if cond_type == '>':
+            return lvalue > rvalue
+        if cond_type == '>=':
+            return lvalue >= rvalue
+        if cond_type == '<':
+            return lvalue < rvalue
+        if cond_type == '<=':
+            return lvalue <= rvalue
+
+        raise ValueError(f'{cond_type} is not implemented.')
+
     def draw(self, path: str):
         tree_copy = self.tree.copy()
 

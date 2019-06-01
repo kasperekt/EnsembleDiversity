@@ -8,8 +8,8 @@ from scipy.special import expit, softmax  # pylint: disable=no-name-in-module
 
 
 class CatboostEnsemble(Ensemble):
-    def __init__(self, params, name='CatboostEnsemble'):
-        super().__init__(params, name=name)
+    def __init__(self, params):
+        super().__init__(params, name='CatboostEnsemble')
         self.clf = CatBoostClassifier(**params)
         self.tmp_json_path = '/tmp/catboost.model.json'
 
