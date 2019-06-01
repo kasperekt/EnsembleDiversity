@@ -52,6 +52,15 @@ def validate_xgb(*args, **kwargs):
     return validate(XGBoostEnsemble, 'XGBoost', *args, **kwargs)
 
 
+VALIDATORS = {
+    'ada': validate_ada,
+    'rf': validate_rf,
+    'lgb': validate_lgb,
+    'cb': validate_cb,
+    'xgb': validate_xgb
+}
+
+
 def validate_structure(used_validators={'ada', 'rf'}, verbose=False):
     iris = Dataset.create_iris().split(test_size=0.5)
     cancer = Dataset.create_cancer().split(test_size=0.5)
@@ -62,20 +71,12 @@ def validate_structure(used_validators={'ada', 'rf'}, verbose=False):
         'n_estimators': range(1, 10)
     })
 
-    validators = {
-        'ada': validate_ada,
-        'rf': validate_rf,
-        'lgb': validate_lgb,
-        'cb': validate_cb,
-        'xgb': validate_xgb
-    }
-
     for validator_key in used_validators:
-        if validator_key not in validators:
+        if validator_key not in VALIDATORS:
             print(f'{validator_key} is not available', file=sys.stderr)
             return
 
-        validator = validators[validator_key]
+        validator = VALIDATORS[validator_key]
 
         for dataset in datasets:
             validator(dataset, param_grid, verbose)
@@ -86,12 +87,15 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--verbose', action='store_true')
-    parser.add_argument('-c', '--check', action='append', required=True)
+    parser.add_argument('-c', '--check', action='append')
+    parser.add_argument('-A', '--all', action='store_true')
     args = parser.parse_args()
+
+    used_validators = list(VALIDATORS.keys()) if args.all else args.check
 
     args_dict = {
         'verbose': args.verbose,
-        'used_validators': args.check
+        'used_validators': used_validators
     }
 
     validate_structure(**args_dict)
