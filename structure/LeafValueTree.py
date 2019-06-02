@@ -14,8 +14,12 @@ class LeafValueTree(Tree):
         root_idx = self.node_name(0)
 
         def recurse(X, node_idx):
-            node = self.tree.nodes[node_idx]
+            if len(self.tree.nodes) == 1:
+                leaf_idx = self.leaf_name(0)
+                leaf_node = self.tree.nodes[leaf_idx]
+                return leaf_node['value']
 
+            node = self.tree.nodes[node_idx]
             threshold = node['threshold']
             feature = node['feature']
             decision_type = node['decision_type']
