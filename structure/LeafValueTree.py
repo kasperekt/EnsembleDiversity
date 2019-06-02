@@ -14,6 +14,10 @@ class LeafValueTree(Tree):
         root_idx = self.node_name(0)
 
         def recurse(X, node_idx):
+            if len(self.tree.nodes) == 0:
+                # TODO: Check if this is valid
+                return 0
+
             if len(self.tree.nodes) == 1:
                 leaf_idx = self.leaf_name(0)
                 leaf_node = self.tree.nodes[leaf_idx]
