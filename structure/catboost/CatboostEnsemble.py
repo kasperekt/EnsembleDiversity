@@ -36,6 +36,8 @@ class CatboostEnsemble(Ensemble):
         preds = np.sum(preds, axis=0)
 
         if n_classes > 2:
+            # https://catboost.ai/docs/concepts/loss-functions-multiclassification.html
+            # Link above suggests different equation for this
             results_proba = softmax(preds, axis=1)
         else:
             results_proba = np.array([[1 - v, v] for v in expit(preds)])
