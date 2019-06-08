@@ -15,7 +15,7 @@ class CatboostExperiment(Experiment):
 
         self.name = 'CatboostExperiment'
         self.param_grid = ParameterGrid({
-            'n_estimators': range(10, 500, 10),
-            'max_depth': range(2, 15),
+            'n_estimators': range(10, 300, 30),
+            'max_depth': range(2, 8),
             'learning_rate': [0.1]
         })

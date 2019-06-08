@@ -13,6 +13,6 @@ class RandomForestExperiment(Experiment):
 
         self.name = 'RandomForestExperiment'
         self.param_grid = ParameterGrid({
-            'n_estimators': [10, 20, 50, 100],
-            'max_depth': range(2, 30, 2),
+            'n_estimators': [10, 20, 50, 100, 150, 200, 300],
+            'max_depth': range(2, 30, 3),
         })
