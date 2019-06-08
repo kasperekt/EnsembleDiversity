@@ -1,9 +1,10 @@
 FROM nvidia/cuda:8.0-devel-ubuntu16.04
+FROM python:stretch
 
 USER root
 
 RUN apt-get update && \
-    apt-get install -y python3 python3-pip graphviz libgraphviz-dev
+    apt-get install -y graphviz libgraphviz-dev
 
 WORKDIR /job
 COPY . /job
