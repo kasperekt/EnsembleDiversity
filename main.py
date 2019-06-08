@@ -15,12 +15,14 @@ def run_experiment():
     train_datasets = [iris_train, cancer_train]
     val_datasets = [iris_val, cancer_val]
 
-    experiments = [LGBExperiment(),
-                   AdaboostExperiment(),
-                   RandomForestExperiment(),
-                   CatboostExperiment(),
-                   XGBoostExperiment(),
-                   BaggingExperiment()]
+    experiments = [
+        AdaboostExperiment(),
+        RandomForestExperiment(),
+        BaggingExperiment(),
+        LGBExperiment(),
+        CatboostExperiment(),
+        XGBoostExperiment(),
+    ]
 
     for exp in experiments:
         exp.run(train_datasets, val_datasets)
