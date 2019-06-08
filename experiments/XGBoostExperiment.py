@@ -14,8 +14,8 @@ class XGBoostExperiment(Experiment):
         self.EnsembleType = XGBoostEnsemble
         self.name = 'XGBoostExperiment'
         self.param_grid = ParameterGrid({
-            'n_estimators': range(10, 300, 30),
-            'max_depth': range(2, 8),
+            'n_estimators': range(10, 500, 20),
+            'max_depth': range(2, 10),
             'num_leaves': range(30, 50, 3),
             'learning_rate': [0.1]
         })

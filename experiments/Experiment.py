@@ -69,4 +69,3 @@ class Experiment(metaclass=ABCMeta):
                 }
 
                 self.add_result(**result_dict)
-                self.ensembles.append(ensemble)

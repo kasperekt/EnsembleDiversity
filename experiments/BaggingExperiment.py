@@ -13,6 +13,6 @@ class BaggingExperiment(Experiment):
 
         self.name = 'BaggingExperiment'
         self.param_grid = ParameterGrid({
-            'n_estimators': [10, 20, 50, 100, 200, 300, 500],
+            'n_estimators': range(10, 500, 30),
             'max_depth': range(2, 30, 2),
         })

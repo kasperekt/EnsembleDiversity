@@ -13,7 +13,7 @@ class AdaboostExperiment(Experiment):
 
         self.name = 'AdaBoostExperiment'
         self.param_grid = ParameterGrid({
-            'n_estimators': [10, 20, 50, 100, 200],
-            'max_depth': range(2, 20, 2),
+            'n_estimators': range(10, 500, 30),
+            'max_depth': range(2, 30, 2),
             'learning_rate': [0.1]
         })
