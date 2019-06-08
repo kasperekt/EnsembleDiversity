@@ -2,7 +2,7 @@ import sys
 import numpy as np
 
 from typing import Tuple
-from structure import Dataset, AdaboostEnsemble, RandomForestEnsemble, LGBEnsemble, CatboostEnsemble, XGBoostEnsemble
+from structure import Dataset, AdaboostEnsemble, RandomForestEnsemble, LGBEnsemble, CatboostEnsemble, XGBoostEnsemble, BaggingEnsemble
 from sklearn.datasets import load_iris, load_breast_cancer
 from sklearn.model_selection import ParameterGrid
 from sklearn.metrics import accuracy_score
@@ -52,12 +52,17 @@ def validate_xgb(*args, **kwargs):
     return validate(XGBoostEnsemble, 'XGBoost', *args, **kwargs)
 
 
+def validate_bag(*args, **kwargs):
+    return validate(BaggingEnsemble, 'Bagging', *args, **kwargs)
+
+
 VALIDATORS = {
     'ada': validate_ada,
     'rf': validate_rf,
     'lgb': validate_lgb,
     'cb': validate_cb,
-    'xgb': validate_xgb
+    'xgb': validate_xgb,
+    'bag': validate_bag
 }
 
 

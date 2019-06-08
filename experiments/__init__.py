@@ -4,6 +4,7 @@ from .AdaboostExperiment import AdaboostExperiment
 from .RandomForestExperiment import RandomForestExperiment
 from .XGBoostExperiment import XGBoostExperiment
 from .CatboostExperiment import CatboostExperiment
+from .BaggingExperiment import BaggingExperiment
 
 __all__ = [
     'Experiment',
@@ -11,5 +12,6 @@ __all__ = [
     'AdaboostExperiment',
     'RandomForestExperiment',
     'XGBoostExperiment',
-    'CatboostExperiment'
+    'CatboostExperiment',
+    'BaggingExperiment'
 ]

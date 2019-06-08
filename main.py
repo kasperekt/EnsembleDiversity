@@ -1,6 +1,6 @@
 import os
 
-from experiments import LGBExperiment, AdaboostExperiment, RandomForestExperiment, XGBoostExperiment, CatboostExperiment
+from experiments import LGBExperiment, AdaboostExperiment, RandomForestExperiment, XGBoostExperiment, CatboostExperiment, BaggingExperiment
 from structure import Tree, Dataset, AdaboostEnsemble, RandomForestEnsemble, LGBEnsemble
 from config import OUT_DIR, prepare_env
 from typing import List
@@ -15,11 +15,14 @@ def run_experiment():
     train_datasets = [iris_train, cancer_train]
     val_datasets = [iris_val, cancer_val]
 
-    experiments = [LGBExperiment(),
-                   AdaboostExperiment(),
-                   RandomForestExperiment(),
-                   CatboostExperiment(),
-                   XGBoostExperiment()]
+    experiments = [
+        AdaboostExperiment(),
+        RandomForestExperiment(),
+        BaggingExperiment(),
+        LGBExperiment(),
+        CatboostExperiment(),
+        XGBoostExperiment(),
+    ]
 
     for exp in experiments:
         exp.run(train_datasets, val_datasets)

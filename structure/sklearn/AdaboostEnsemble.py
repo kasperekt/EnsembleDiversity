@@ -7,7 +7,7 @@ from sklearn.tree import DecisionTreeClassifier
 
 
 class AdaboostEnsemble(SklearnEnsemble):
-    def __init__(self, params, name='Adabost'):
+    def __init__(self, params):
         super().__init__(params, name='Adaboost')
 
         clf_params = {**params}
