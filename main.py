@@ -1,6 +1,6 @@
 import os
 
-from experiments import LGBExperiment, AdaboostExperiment, RandomForestExperiment, XGBoostExperiment, CatboostExperiment
+from experiments import LGBExperiment, AdaboostExperiment, RandomForestExperiment, XGBoostExperiment, CatboostExperiment, BaggingExperiment
 from structure import Tree, Dataset, AdaboostEnsemble, RandomForestEnsemble, LGBEnsemble
 from config import OUT_DIR, prepare_env
 from typing import List
@@ -19,7 +19,8 @@ def run_experiment():
                    AdaboostExperiment(),
                    RandomForestExperiment(),
                    CatboostExperiment(),
-                   XGBoostExperiment()]
+                   XGBoostExperiment(),
+                   BaggingExperiment()]
 
     for exp in experiments:
         exp.run(train_datasets, val_datasets)

@@ -19,6 +19,7 @@ __all__ = [
     'SklearnTree',
     'AdaboostEnsemble',
     'RandomForestEnsemble',
+    'BaggingEnsemble',
     'CatboostTree',
     'CatboostEnsemble',
     'XGBoostTree',
