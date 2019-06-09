@@ -1,4 +1,3 @@
-from .Dataset import Dataset
 from .Ensemble import Ensemble
 from .Tree import Tree
 from .LeafValueTree import LeafValueTree
@@ -9,7 +8,6 @@ from .sklearn import *
 from .xgboost import *
 
 __all__ = [
-    'Dataset',
     'Ensemble',
     'Tree',
     'LeafValueTree',

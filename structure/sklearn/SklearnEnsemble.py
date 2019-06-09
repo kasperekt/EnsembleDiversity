@@ -2,7 +2,8 @@ import numpy as np
 
 from abc import ABCMeta
 from predict import majority_voting
-from structure import Dataset, Ensemble
+from data import Dataset
+from structure import Ensemble
 from . import SklearnTree
 
 

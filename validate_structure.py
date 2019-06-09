@@ -2,7 +2,8 @@ import sys
 import numpy as np
 
 from typing import Tuple
-from structure import Dataset, AdaboostEnsemble, RandomForestEnsemble, LGBEnsemble, CatboostEnsemble, XGBoostEnsemble, BaggingEnsemble
+from data import Dataset
+from structure import AdaboostEnsemble, RandomForestEnsemble, LGBEnsemble, CatboostEnsemble, XGBoostEnsemble, BaggingEnsemble
 from sklearn.datasets import load_iris, load_breast_cancer
 from sklearn.model_selection import ParameterGrid
 from sklearn.metrics import accuracy_score

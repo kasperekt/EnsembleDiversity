@@ -1,9 +1,9 @@
 import numpy as np
 
 from abc import ABCMeta, abstractmethod
+from data import Dataset
 from typing import List
 from .Tree import Tree
-from .Dataset import Dataset
 
 
 class Ensemble(metaclass=ABCMeta):

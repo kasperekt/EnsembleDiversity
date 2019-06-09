@@ -3,7 +3,8 @@ import lightgbm as lgb
 import scipy.special as sp
 
 from .LGBTree import LGBTree
-from structure import Ensemble, Dataset, Tree
+from structure import Ensemble, Tree
+from data import Dataset
 
 
 class LGBEnsemble(Ensemble):

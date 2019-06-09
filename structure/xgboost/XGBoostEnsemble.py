@@ -3,7 +3,8 @@ import xgboost as xgb
 import scipy
 import scipy.special as sp
 
-from structure import Ensemble, Dataset
+from data import Dataset
+from structure import Ensemble
 from .XGBoostTree import XGBoostTree
 
 

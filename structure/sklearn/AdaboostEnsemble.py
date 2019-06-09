@@ -1,7 +1,7 @@
 import numpy as np
 
 from . import SklearnEnsemble, SklearnTree
-from structure import Dataset
+from data import Dataset
 from sklearn.ensemble import AdaBoostClassifier
 from sklearn.tree import DecisionTreeClassifier
 

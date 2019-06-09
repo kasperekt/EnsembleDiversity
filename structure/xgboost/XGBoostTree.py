@@ -3,7 +3,8 @@ import pygraphviz as pgv
 import networkx as nx
 
 from .utils import build_edges_dict, is_leaf, get_leaf_value, get_threshold, get_feature
-from structure import LeafValueTree, Dataset
+from data import Dataset
+from structure import LeafValueTree
 
 
 class XGBoostTree(LeafValueTree):

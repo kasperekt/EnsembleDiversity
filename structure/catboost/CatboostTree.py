@@ -1,6 +1,7 @@
 import numpy as np
 
-from structure import LeafValueTree, Dataset
+from data import Dataset
+from structure import LeafValueTree
 
 
 def split_idx_generator():

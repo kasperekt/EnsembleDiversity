@@ -1,7 +1,8 @@
 import numpy as np
 
 from .utils import node_index_of, is_leaf, is_split
-from structure import Dataset, LeafValueTree
+from structure import LeafValueTree
+from data import Dataset
 
 
 class LGBTree(LeafValueTree):
