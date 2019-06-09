@@ -1,4 +1,4 @@
-FROM nvidia/cuda:8.0-devel-ubuntu16.04
+FROM ubuntu:18.10
 FROM python:stretch
 
 USER root
