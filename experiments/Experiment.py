@@ -2,7 +2,7 @@ import pandas as pd
 
 from abc import ABCMeta, abstractmethod
 from typing import List, Dict
-from structure import Ensemble, Dataset
+from structure import Dataset
 from collections import namedtuple
 
 from sklearn.model_selection import ParameterGrid
@@ -11,14 +11,12 @@ from sklearn.metrics import accuracy_score
 
 class Experiment(metaclass=ABCMeta):
     def __init__(self):
-        self.ensembles: List[Ensemble] = []
         self.results: List[any] = []
         self.EnsembleType: callable = None
         self.param_grid: ParameterGrid = None
         self.name = 'Experiment'
 
     def reset(self):
-        self.ensembles = []
         self.results = []
 
     def add_result(self, **kwargs):
