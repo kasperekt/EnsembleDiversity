@@ -1,13 +1,17 @@
 import os
 
-on_remote = False
-if 'HOST_TYPE' in os.environ and os.environ['HOST_TYPE'] == 'remote':
-    print('Running on remote machine!')
-    on_remote = True
+
+def get_results_dir():
+    key = 'HOST_TYPE'
+
+    if key in os.environ and os.environ[key] == 'remote':
+        return '/artifacts'
+
+    return './'
 
 
-OUT_DIR = '/artifacts' if on_remote else './out'
-VIS_DIR = '/artifacts/vis' if on_remote else './vis'
+OUT_DIR = os.path.join(get_results_dir(), 'out')
+VIS_DIR = os.path.join(get_results_dir(), 'vis')
 
 
 def prepare_env():
