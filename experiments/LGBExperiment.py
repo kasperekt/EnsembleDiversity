@@ -15,7 +15,7 @@ class LGBExperiment(Experiment):
 
         self.name = 'LGBExperiment'
         self.param_grid = ParameterGrid({
-            'n_estimators': range(10, 500, 30),
+            'n_estimators': range(10, 500, 50),
             'max_depth': range(2, 8),
             'num_leaves': range(20, 50, 3),
             'learning_rate': [0.1]

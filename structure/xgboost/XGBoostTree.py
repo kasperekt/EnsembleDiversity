@@ -7,6 +7,8 @@ from structure import LeafValueTree, Dataset
 
 
 class XGBoostTree(LeafValueTree):
+    decision_type = '<'
+
     def __init__(self, dataset):
         super().__init__(dataset, clf_type='xgboost')
 
@@ -22,9 +24,12 @@ class XGBoostTree(LeafValueTree):
                 return_tree.add_leaf(node_idx,
                                      value=get_leaf_value(node_data))
             else:
-                return_tree.add_split(node_idx, '<',
-                                      get_feature(node_data),
-                                      get_threshold(node_data))
+                feature = get_feature(node_data)
+                threshold = get_threshold(node_data)
+
+                return_tree.add_split(node_idx,
+                                      XGBoostTree.decision_type,
+                                      feature, threshold)
 
                 successors = edges_dict[node_idx]
 

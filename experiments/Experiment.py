@@ -57,12 +57,16 @@ class Experiment(metaclass=ABCMeta):
                 accuracy = accuracy_score(val.y, preds)
 
                 node_diversity = ensemble.node_diversity()
+                attr_diversity = ensemble.used_attrs_diversity()
+                feature_diversity = ensemble.used_feature_diversity()
 
                 result_dict = {
                     'name': ensemble.name,
                     'dataset_name': train.name,
                     'accuracy': accuracy,
                     'node_diversity': node_diversity,
+                    'attr_diversity': attr_diversity,
+                    'feature_diversity': feature_diversity,
                     **params
                 }
 

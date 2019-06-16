@@ -5,6 +5,8 @@ from structure import Tree, Dataset
 
 
 class SklearnTree(Tree):
+    decision_type = '<='
+
     def __init__(self, dataset: Dataset, clf_type="Sklearn"):
         super().__init__(dataset, clf_type=clf_type)
 
@@ -21,7 +23,7 @@ class SklearnTree(Tree):
         def traverse(node: int):
             if threshold[node] != -2:
                 tree_structure.add_split(node,
-                                         decision_type='<=',
+                                         decision_type=SklearnTree.decision_type,
                                          feature=features[node],
                                          threshold=threshold[node])
 
@@ -94,7 +96,6 @@ class SklearnTree(Tree):
 
             return self.predict_traverse(X, right_child_idx, verbose=verbose)
 
-    # TODO: Move "recurse" to method
     def predict(self, data: np.ndarray, verbose=False) -> np.ndarray:
         root_idx = self.node_name(0)
         return np.array([self.predict_traverse(X, root_idx, verbose=verbose) for X in data], dtype=np.int)

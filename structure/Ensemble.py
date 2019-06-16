@@ -21,6 +21,46 @@ class Ensemble(metaclass=ABCMeta):
         node_counts = np.array([tree.num_nodes() for tree in self.trees])
         return node_counts.std()
 
+    def pairwise_diversity(self, distance_fn, result_fn) -> float:
+        n_trees = len(self.trees)
+        results = []
+
+        for i in range(n_trees):
+            tree_i = self.trees[i]
+            for j in range(i + 1, n_trees):
+                tree_j = self.trees[j]
+
+                difference = distance_fn(tree_i, tree_j)
+                results.append(difference)
+
+        return result_fn(results)
+
+    def used_attrs_diversity(self) -> float:
+        def distance(tree_i: Tree, tree_j: Tree) -> float:
+            max_len = max(len(tree_i.used_attrs), len(tree_j.used_attrs))
+            intersection = len(
+                tree_i.used_attrs.intersection(tree_j.used_attrs))
+            return 1 - (intersection / max_len)
+
+        def result(results):
+            return np.array(results).std()
+
+        return self.pairwise_diversity(distance, result)
+
+    def used_feature_diversity(self) -> float:
+        def distance(tree_i: Tree, tree_j: Tree) -> float:
+            max_len = max(len(tree_i.used_features), len(tree_j.used_features))
+
+            intersection = len(
+                tree_i.used_features.intersection(tree_j.used_features))
+
+            return 1 - (intersection / max_len)
+
+        def result(results):
+            return np.array(results).std()
+
+        return self.pairwise_diversity(distance, result)
+
     def clf_predict(self, X: np.ndarray) -> np.ndarray:
         if self.clf is None:
             raise ValueError('"clf" should be fitted')
@@ -34,3 +74,6 @@ class Ensemble(metaclass=ABCMeta):
     @abstractmethod
     def predict(self, X: np.ndarray) -> np.ndarray:
         raise NotImplementedError
+
+    def __len__(self):
+        return len(self.trees)

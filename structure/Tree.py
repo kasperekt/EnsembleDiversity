@@ -11,6 +11,9 @@ class Tree(object):
         self.dataset = dataset
         self.clf_type = clf_type
 
+        self.used_features = set()
+        self.used_attrs = set()
+
     @staticmethod
     def node_name(idx: int):
         return f'Node_{idx}'
@@ -33,7 +36,10 @@ class Tree(object):
                            **kwargs,
                            is_leaf=True)
 
-    def add_split(self, idx: int, decision_type: str, feature: str, threshold: float):
+    def add_split(self, idx: int, decision_type: str, feature: int, threshold: float):
+        self.add_used_attr(feature, threshold, decision_type)
+        self.add_used_feature(feature)
+
         self.tree.add_node(self.node_name(idx),
                            decision_type=decision_type,
                            feature=feature,
@@ -51,6 +57,17 @@ class Tree(object):
 
     def edge_label(self):
         return
+
+    def encode_used_attr(self, feature, threshold, decision_type):
+        return f'{feature}__{threshold}__${decision_type}'
+
+    def add_used_attr(self, feature, threshold, decision_type):
+        used_attr_encoded = self.encode_used_attr(
+            feature, threshold, decision_type)
+        self.used_attrs.add(used_attr_encoded)
+
+    def add_used_feature(self, feature):
+        self.used_features.add(feature)
 
     def num_nodes(self) -> int:
         return len(self.tree.nodes)

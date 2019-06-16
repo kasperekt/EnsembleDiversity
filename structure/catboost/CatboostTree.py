@@ -16,6 +16,8 @@ def divide_leaves(leaves, n_classes):
 
 
 class CatboostTree(LeafValueTree):
+    decision_type = '>'
+
     def __init__(self, dataset, clf_type='CatboostTree'):
         super().__init__(dataset, clf_type=clf_type)
 
@@ -54,7 +56,8 @@ class CatboostTree(LeafValueTree):
             border = float(split['border'])
 
             idx = next(split_idx)
-            return_tree.add_split(idx, '>', feature_idx, border)
+            return_tree.add_split(
+                idx, CatboostTree.decision_type, feature_idx, border)
 
             if parent_idx is not None:
                 return_tree.add_edge(parent_idx, idx, is_child_leaf=False)
