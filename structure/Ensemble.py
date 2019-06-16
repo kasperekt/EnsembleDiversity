@@ -38,8 +38,13 @@ class Ensemble(metaclass=ABCMeta):
     def used_attrs_diversity(self) -> float:
         def distance(tree_i: Tree, tree_j: Tree) -> float:
             max_len = max(len(tree_i.used_attrs), len(tree_j.used_attrs))
+
+            if max_len == 0:
+                return 0
+
             intersection = len(
                 tree_i.used_attrs.intersection(tree_j.used_attrs))
+
             return 1 - (intersection / max_len)
 
         def result(results):
@@ -50,6 +55,9 @@ class Ensemble(metaclass=ABCMeta):
     def used_feature_diversity(self) -> float:
         def distance(tree_i: Tree, tree_j: Tree) -> float:
             max_len = max(len(tree_i.used_features), len(tree_j.used_features))
+
+            if max_len == 0:
+                return 0
 
             intersection = len(
                 tree_i.used_features.intersection(tree_j.used_features))
