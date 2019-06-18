@@ -1,7 +1,8 @@
 import numpy as np
+import networkx as nx
 
 from abc import ABCMeta, abstractmethod
-from typing import List
+from typing import List, Callable
 from .Tree import Tree
 from .Dataset import Dataset
 
@@ -21,7 +22,9 @@ class Ensemble(metaclass=ABCMeta):
         node_counts = np.array([tree.num_nodes() for tree in self.trees])
         return node_counts.std()
 
-    def pairwise_diversity(self, distance_fn, result_fn) -> float:
+    def pairwise_diversity(self,
+                           distance_fn: Callable[[Tree, Tree], float],
+                           result_fn: Callable[[List[float]], float]) -> float:
         n_trees = len(self.trees)
         results = []
 
