@@ -94,7 +94,14 @@ class SklearnTree(Tree):
 
             return self.predict_traverse(X, right_child_idx, verbose=verbose)
 
-    # TODO: Move "recurse" to method
     def predict(self, data: np.ndarray, verbose=False) -> np.ndarray:
+        if len(self.tree) < 2:
+            leaf_idx = self.leaf_name(0)
+            leaf_node = self.tree.nodes[leaf_idx]
+            target = leaf_node['target']
+
+            return np.repeat(target, len(data))
+
         root_idx = self.node_name(0)
+
         return np.array([self.predict_traverse(X, root_idx, verbose=verbose) for X in data], dtype=np.int)
