@@ -1,19 +1,53 @@
+import numpy as np
+
+from typing import Tuple
+from sklearn.preprocessing import OneHotEncoder, LabelEncoder
+from sklearn.compose import ColumnTransformer
 from sklearn.model_selection import train_test_split
-from sklearn.datasets import load_iris, load_breast_cancer
+from sklearn.datasets import load_iris, load_breast_cancer, fetch_openml
 
 
 class Dataset(object):
-    def __init__(self, X, y, feature_names, target_names, name=None):
+    def __init__(self, X, y, feature_names, target_names, name=None, categories={}):
         self.X = X
         self.y = y
         self.feature_names = feature_names
         self.target_names = target_names
         self.name = name
+        self.categories = categories
+        self.ct = None
+
+        if len(categories.keys()) > 0:
+            self.encode_features()
+
+    @staticmethod
+    def get_target_names(data: dict) -> np.ndarray:
+        unique_target_names = set(data['target'])
 
     @staticmethod
     def from_sklearn(name, dataset):
         return Dataset(dataset.data, dataset.target,
                        dataset.feature_names, dataset.target_names, name=name)
+
+    @staticmethod
+    def from_openml(name):
+        dataset = fetch_openml(name)
+
+        feature_names = dataset.feature_names if 'feature_names' in dataset else None
+
+        if 'target_names' in dataset:
+            target_names = dataset.target_names
+            target = dataset.target
+        else:
+            le = LabelEncoder()
+            le.fit(dataset.target)
+
+            target = le.transform(dataset.target)
+            target_names = le.classes_
+
+        return Dataset(dataset.data, target,
+                       feature_names, target_names,
+                       name=name, categories=dataset.categories)
 
     @staticmethod
     def create_iris():
@@ -22,6 +56,40 @@ class Dataset(object):
     @staticmethod
     def create_cancer():
         return Dataset.from_sklearn('cancer', load_breast_cancer())
+
+    def encode_features(self):
+        categories = list(self.categories.keys())
+
+        all_idx = set(range(0, self.X.shape[1]))
+        cat_features_idx = [self.feature_names.index(
+            cat) for cat in categories]
+        num_features_idx = list(all_idx.difference(cat_features_idx))
+
+        ct = ColumnTransformer(transformers=[
+            ('cat', OneHotEncoder(categories='auto', sparse=False), cat_features_idx),
+            ('num', 'passthrough', num_features_idx)
+        ])
+
+        ct.fit(self.X)
+
+        # New feature names
+        categories = ct.transformers_[0][1].categories_
+        cat_dict = {idx: cat for idx, cat in zip(
+            cat_features_idx, categories)}
+
+        new_feature_names = []
+        for idx in all_idx:
+            name = self.feature_names[idx]
+
+            if idx in cat_features_idx:
+                names = [f'{name}_{int(cat_idx)}' for cat_idx in cat_dict[idx]]
+                new_feature_names += names
+            else:
+                new_feature_names.append(name)
+
+        self.feature_names = new_feature_names
+        self.X = ct.transform(self.X)
+        self.ct = ct
 
     def size(self):
         return len(self.X)

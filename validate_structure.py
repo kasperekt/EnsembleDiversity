@@ -67,9 +67,10 @@ VALIDATORS = {
 
 
 def validate_structure(used_validators={'ada', 'rf'}, verbose=False):
-    iris = Dataset.create_iris().split(test_size=0.5)
-    cancer = Dataset.create_cancer().split(test_size=0.5)
-    datasets = [iris, cancer]
+    iris = Dataset.create_iris().split(test_size=0.8)
+    cancer = Dataset.create_cancer().split(test_size=0.8)
+    aids = Dataset.from_openml('aids').split(test_size=0.8)
+    datasets = [iris, cancer, aids]
 
     param_grid = ParameterGrid({
         'max_depth': range(2, 10),
