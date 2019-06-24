@@ -15,7 +15,6 @@ class LeafValueTree(Tree):
 
     def recurse(self, X, node_idx):
         if len(self.tree.nodes) == 0:
-            # TODO: Check if this is valid
             return 0
 
         if len(self.tree.nodes) == 1:
@@ -50,3 +49,6 @@ class LeafValueTree(Tree):
     def predict(self, data: np.ndarray) -> np.ndarray:
         root_idx = self.node_name(0)
         return np.array([self.recurse(X, root_idx) for X in data], dtype=np.float)
+
+    def __repr__(self):
+        return f'LeafValueTree<nodes_len={len(self.tree.nodes)}>'

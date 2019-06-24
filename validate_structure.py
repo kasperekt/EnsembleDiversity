@@ -12,7 +12,10 @@ Data = Tuple[Dataset, Dataset]
 
 def validate(ValidatorType, name, data: Data, param_grid: ParameterGrid, verbose=False):
     train_data, val_data = data
-    results = []
+
+    compat_results = []
+    pred_results = []
+    clf_pred_results = []
 
     for params in param_grid:
         ensemble = ValidatorType(params)
@@ -21,15 +24,30 @@ def validate(ValidatorType, name, data: Data, param_grid: ParameterGrid, verbose
         preds = ensemble.predict(val_data.X)
         clf_preds = ensemble.clf_predict(val_data.X)
 
-        accuracy = accuracy_score(preds, clf_preds)
-        results.append(accuracy)
+        # Compatibility
+        compat_accuracy = accuracy_score(preds, clf_preds)
+        compat_results.append(compat_accuracy)
 
-        if verbose and accuracy < 1.0:
-            print(
-                f'[{accuracy}] {name} for dataset "{train_data.name}" is not valid for params: {params}')
+        # Structure prediction accuracy
+        pred_accuracy = accuracy_score(val_data.y, preds)
+        pred_results.append(pred_accuracy)
 
-    general_acc = sum(results)/len(results)
-    print(f'{name}, dataset={train_data.name}, acc={general_acc}')
+        # Classifier prediction accuracy
+        clf_pred_accuracy = accuracy_score(val_data.y, clf_preds)
+        clf_pred_results.append(clf_pred_accuracy)
+
+    compat_general_acc = sum(compat_results)/len(compat_results)
+    pred_general_acc = sum(pred_results)/len(pred_results)
+    clf_pred_general_acc = sum(clf_pred_results)/len(clf_pred_results)
+
+    if verbose:
+        print(f'{name}, dataset={train_data.name}')
+        print(f'compatibility acc={compat_general_acc}')
+        print(f'prediction acc={pred_general_acc}')
+        print(f'clf prediction acc={clf_pred_general_acc}')
+        print()
+    else:
+        print(f'{name}, dataset={train_data.name}, acc={compat_general_acc}')
 
 
 def validate_ada(*args, **kwargs):

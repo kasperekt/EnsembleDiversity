@@ -12,15 +12,16 @@ class SklearnEnsemble(Ensemble, metaclass=ABCMeta):
         self.clf = None
 
     def fit(self, dataset: Dataset):
-        self.clf.fit(dataset.X, dataset.y)
-        self.trees = [SklearnTree.parse(tree, dataset)
+        encoded_dataset = dataset.oh_encoded()
+
+        self.clf.fit(encoded_dataset.X, encoded_dataset.y)
+        self.trees = [SklearnTree.parse(tree, encoded_dataset)
                       for tree in self.clf.estimators_]
 
     def predict(self, data: np.ndarray) -> np.ndarray:
         if len(self.trees) == 0:
             raise ValueError('There are no trees available')
 
-        # TODO: Doesn't work - very different predictions
         predictions = np.array([tree.predict(data) for tree in self.trees])
         predictions = np.rollaxis(predictions, axis=1)
 

@@ -13,16 +13,18 @@ class XGBoostEnsemble(Ensemble):
         self.clf = xgb.XGBClassifier(**params)
 
     def fit(self, dataset: Dataset):
-        self.trees = []
-        self.clf.fit(dataset.X, dataset.y)
+        encoded_dataset = dataset.oh_encoded()
 
-        n_classes = dataset.num_classes()
+        self.trees = []
+        self.clf.fit(encoded_dataset.X, encoded_dataset.y)
+
+        n_classes = encoded_dataset.num_classes()
         n_estimators = self.clf.n_estimators
         n_trees = n_estimators * n_classes if n_classes > 2 else n_estimators
 
         for tree_idx in range(0, n_trees):
             tree = xgb.to_graphviz(self.clf, num_trees=tree_idx)
-            parsed_tree = XGBoostTree.parse(str(tree), dataset)
+            parsed_tree = XGBoostTree.parse(str(tree), encoded_dataset)
 
             self.trees.append(parsed_tree)
 

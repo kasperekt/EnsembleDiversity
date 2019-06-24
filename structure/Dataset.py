@@ -1,4 +1,5 @@
 import numpy as np
+import sklearn
 
 from typing import Tuple
 from sklearn.preprocessing import OneHotEncoder, LabelEncoder
@@ -8,21 +9,21 @@ from sklearn.datasets import load_iris, load_breast_cancer, fetch_openml
 
 
 class Dataset(object):
-    def __init__(self, X, y, feature_names, target_names, name=None, categories={}):
+    def __init__(self, X, y, feature_names, target_names, name=None, categories={}, ct=None):
         self.X = X
         self.y = y
         self.feature_names = feature_names
         self.target_names = target_names
         self.name = name
         self.categories = categories
-        self.ct = None
+        self.ct = ct
 
-        if len(categories.keys()) > 0:
-            self.encode_features()
+        self._is_oh_encoded = False
 
-    @staticmethod
-    def get_target_names(data: dict) -> np.ndarray:
-        unique_target_names = set(data['target'])
+    def copy(self):
+        return Dataset(self.X.copy(), self.y.copy(),
+                       self.feature_names[:], self.target_names[:],
+                       name=self.name, categories=self.categories)
 
     @staticmethod
     def from_sklearn(name, dataset):
@@ -57,7 +58,10 @@ class Dataset(object):
     def create_cancer():
         return Dataset.from_sklearn('cancer', load_breast_cancer())
 
-    def encode_features(self):
+    def oh_encoded(self):
+        if self._is_oh_encoded or len(self.categories) < 1:
+            return self
+
         categories = list(self.categories.keys())
 
         all_idx = set(range(0, self.X.shape[1]))
@@ -87,9 +91,13 @@ class Dataset(object):
             else:
                 new_feature_names.append(name)
 
-        self.feature_names = new_feature_names
-        self.X = ct.transform(self.X)
-        self.ct = ct
+        new_dataset = Dataset(ct.transform(self.X), self.y,
+                              new_feature_names, self.target_names,
+                              name=self.name, categories=self.categories,
+                              ct=ct)
+        new_dataset._is_oh_encoded = True
+
+        return new_dataset
 
     def size(self):
         return len(self.X)
