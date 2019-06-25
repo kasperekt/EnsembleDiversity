@@ -1,7 +1,7 @@
 import numpy as np
 
 from . import SklearnEnsemble, SklearnTree
-from structure import Dataset
+from data import Dataset
 from sklearn.ensemble import AdaBoostClassifier
 from sklearn.tree import DecisionTreeClassifier
 
@@ -19,13 +19,13 @@ class AdaboostEnsemble(SklearnEnsemble):
         self.clf = AdaBoostClassifier(
             **clf_params, base_estimator=tree, algorithm='SAMME')
 
-    def predict(self, X: np.ndarray) -> np.ndarray:
+    def predict(self, dataset: Dataset) -> np.ndarray:
         weights = self.clf.estimator_weights_
         classes = self.clf.classes_
         n_classes = len(classes)
 
         classes = classes[:, np.newaxis]
-        preds = np.array([(tree.predict(X) == classes).T *
+        preds = np.array([(tree.predict(dataset.X) == classes).T *
                           w for tree, w in zip(self.trees, weights)])
         preds = sum(preds)
         preds /= self.clf.estimator_weights_.sum()

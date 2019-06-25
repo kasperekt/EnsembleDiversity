@@ -1,7 +1,8 @@
 import os
 
 from experiments import LGBExperiment, AdaboostExperiment, RandomForestExperiment, XGBoostExperiment, CatboostExperiment, BaggingExperiment
-from structure import Tree, Dataset, AdaboostEnsemble, RandomForestEnsemble, LGBEnsemble
+from data import Dataset
+from structure import AdaboostEnsemble, RandomForestEnsemble, LGBEnsemble
 from config import OUT_DIR, prepare_env
 from typing import List
 from sklearn.datasets import load_iris, load_breast_cancer

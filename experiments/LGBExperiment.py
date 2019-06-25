@@ -2,7 +2,8 @@ import lightgbm as lgb
 
 from typing import List
 from .Experiment import Experiment
-from structure import LGBEnsemble, Dataset
+from data import Dataset
+from structure import LGBEnsemble
 from sklearn.metrics import accuracy_score
 from sklearn.model_selection import ParameterGrid
 

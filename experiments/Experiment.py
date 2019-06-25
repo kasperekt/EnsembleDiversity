@@ -2,7 +2,7 @@ import pandas as pd
 
 from abc import ABCMeta, abstractmethod
 from typing import List, Dict
-from structure import Dataset
+from data import Dataset
 from collections import namedtuple
 
 from sklearn.model_selection import ParameterGrid

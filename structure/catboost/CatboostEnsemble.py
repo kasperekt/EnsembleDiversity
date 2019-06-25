@@ -26,13 +26,13 @@ class CatboostEnsemble(Ensemble):
         self.trees = [CatboostTree.parse(tree, dataset)
                       for tree in model['oblivious_trees']]
 
-    def predict_proba(self, X) -> np.ndarray:
+    def predict_proba(self, dataset: Dataset) -> np.ndarray:
         if len(self.trees) == 0:
             raise ValueError('There are no trees available')
 
         n_classes = len(self.clf._classes)  # pylint: disable=no-member
 
-        preds = np.array([tree.predict(X) for tree in self.trees])
+        preds = np.array([tree.predict(dataset.X) for tree in self.trees])
         preds = np.sum(preds, axis=0)
 
         if n_classes > 2:
@@ -44,7 +44,7 @@ class CatboostEnsemble(Ensemble):
 
         return results_proba
 
-    def predict(self, X) -> np.ndarray:
-        results_proba = self.predict_proba(X)
+    def predict(self, dataset: Dataset) -> np.ndarray:
+        results_proba = self.predict_proba(dataset)
         results_cls = np.argmax(results_proba, axis=1)
         return results_cls

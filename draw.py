@@ -1,7 +1,8 @@
 import os
 
 from typing import List
-from structure import Dataset, Tree, AdaboostEnsemble, LGBEnsemble, RandomForestEnsemble, CatboostEnsemble
+from data import Dataset
+from structure import Tree, AdaboostEnsemble, LGBEnsemble, RandomForestEnsemble, CatboostEnsemble
 from sklearn.datasets import load_iris
 
 

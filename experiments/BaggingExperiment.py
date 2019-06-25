@@ -1,6 +1,7 @@
 from .Experiment import Experiment
 from typing import List
-from structure import Dataset, BaggingEnsemble
+from data import Dataset
+from structure import BaggingEnsemble
 from sklearn.model_selection import ParameterGrid
 from sklearn.metrics import accuracy_score
 

@@ -2,8 +2,8 @@ import numpy as np
 
 from abc import ABCMeta, abstractmethod
 from typing import List
+from data import Dataset
 from .Tree import Tree
-from .Dataset import Dataset
 
 
 class Ensemble(metaclass=ABCMeta):
