@@ -3,7 +3,7 @@ import xgboost as xgb
 import scipy
 import scipy.special as sp
 
-from data import Dataset
+from data import Dataset, DatasetEncoder
 from structure import Ensemble
 from .XGBoostTree import XGBoostTree
 
@@ -12,11 +12,13 @@ class XGBoostEnsemble(Ensemble):
     def __init__(self, params):
         super().__init__(params, name='XGBoostEnsemble')
         self.clf = xgb.XGBClassifier(**params)
-        self.ct = None
+        self.dataset_encoder = None
 
     def fit(self, dataset: Dataset):
-        encoded_dataset = dataset.oh_encoded()
-        self.ct = encoded_dataset.ct
+        if self.dataset_encoder is None:
+            self.dataset_encoder = DatasetEncoder.create_one_hot(dataset)
+
+        encoded_dataset = self.dataset_encoder.transform(dataset)
 
         self.trees = []
         self.clf.fit(encoded_dataset.X, encoded_dataset.y)
@@ -35,11 +37,16 @@ class XGBoostEnsemble(Ensemble):
         if len(self.trees) == 0:
             raise ValueError('There are no trees available')
 
+        if self.dataset_encoder is None:
+            raise ValueError('No dataset encoder available')
+
+        encoded_dataset = self.dataset_encoder.transform(dataset)
+
         n_classes = len(self.clf.classes_)
         n_estimators = self.clf.n_estimators
-        n_examples = len(dataset.X)
+        n_examples = len(encoded_dataset.X)
 
-        predictions = np.array([tree.predict(dataset.X)
+        predictions = np.array([tree.predict(encoded_dataset.X)
                                 for tree in self.trees])
 
         if n_classes > 2:

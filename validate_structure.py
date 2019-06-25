@@ -22,8 +22,8 @@ def validate(ValidatorType, name, data: Data, param_grid: ParameterGrid, verbose
         ensemble = ValidatorType(params)
         ensemble.fit(train_data)
 
-        preds = ensemble.predict(val_data.X)
-        clf_preds = ensemble.clf_predict(val_data.X)
+        preds = ensemble.predict(val_data)
+        clf_preds = ensemble.clf_predict(val_data)
 
         # Compatibility
         compat_accuracy = accuracy_score(preds, clf_preds)
@@ -93,7 +93,7 @@ def validate_structure(used_validators={'ada', 'rf'}, verbose=False):
 
     param_grid = ParameterGrid({
         'max_depth': range(2, 10),
-        'n_estimators': range(1, 10)
+        'n_estimators': range(1, 100, 10)
     })
 
     for validator_key in used_validators:

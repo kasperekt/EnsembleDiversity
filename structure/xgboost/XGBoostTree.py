@@ -3,6 +3,7 @@ import pygraphviz as pgv
 import networkx as nx
 
 from .utils import build_edges_dict, is_leaf, get_leaf_value, get_threshold, get_feature
+from structure import LeafValueTree
 from data import Dataset
 
 

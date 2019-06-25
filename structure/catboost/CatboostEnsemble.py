@@ -2,7 +2,8 @@ import json
 import numpy as np
 
 from .CatboostTree import CatboostTree
-from structure import Dataset, Ensemble
+from data import Dataset
+from structure import Ensemble
 from catboost import CatBoostClassifier
 from scipy.special import expit, softmax  # pylint: disable=no-name-in-module
 
