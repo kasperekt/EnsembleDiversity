@@ -12,8 +12,15 @@ def split_idx_generator():
 
 
 def divide_leaves(leaves, n_classes):
-    new_shape = (n_classes, len(leaves) // n_classes)
-    return np.rollaxis(leaves.reshape(new_shape), axis=1)
+    # FIXME: Catboost validator crashes here.
+    # In case of 48 clases and 152 leaf_values it crashes. OF COURSE!
+    try:
+        new_shape = (n_classes, len(leaves) // n_classes)
+        rolled = np.rollaxis(leaves.reshape(new_shape), axis=1)
+        return rolled
+    except Exception as err:
+        print(len(leaves), n_classes)
+        print(err)
 
 
 class CatboostTree(LeafValueTree):

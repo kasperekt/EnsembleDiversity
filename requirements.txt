@@ -1,4 +1,4 @@
-catboost==0.14.2
+catboost==0.15.2
 graphviz==0.10.1
 lightgbm
 matplotlib==3.0.2

@@ -6,6 +6,9 @@ from sklearn.ensemble import BaggingClassifier
 
 class BaggingEnsemble(SklearnEnsemble):
     def __init__(self, params: dict):
+        # Always use all cores
+        params['n_jobs'] = -1
+
         super().__init__(params, 'Bagging')
 
         clf_params = params.copy()

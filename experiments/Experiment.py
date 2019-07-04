@@ -53,7 +53,7 @@ class Experiment(metaclass=ABCMeta):
                     final_params)
                 ensemble.fit(train)
 
-                preds = ensemble.predict(val.X)
+                preds = ensemble.predict(val)
                 accuracy = accuracy_score(val.y, preds)
 
                 node_diversity = ensemble.node_diversity()

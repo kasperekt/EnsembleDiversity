@@ -15,25 +15,31 @@ class CatboostEnsemble(Ensemble):
         self.tmp_json_path = '/tmp/catboost.model.json'
 
     def fit(self, dataset: Dataset):
-        loss_function = 'MultiClass' if dataset.num_classes() > 2 else 'Logloss'
+        self.create_encoder(dataset)
+        encoded_dataset = self.encode_dataset(dataset)
+
+        loss_function = 'MultiClass' if encoded_dataset.num_classes() > 2 else 'Logloss'
         self.clf.set_params(loss_function=loss_function, verbose=False)
 
-        self.clf.fit(dataset.X, dataset.y)
+        self.clf.fit(encoded_dataset.X, encoded_dataset.y)
 
         self.clf.save_model(self.tmp_json_path, format='json')
         with open(self.tmp_json_path, 'r') as fp:
             model = json.load(fp)
 
-        self.trees = [CatboostTree.parse(tree, dataset)
+        self.trees = [CatboostTree.parse(tree, encoded_dataset)
                       for tree in model['oblivious_trees']]
 
     def predict_proba(self, dataset: Dataset) -> np.ndarray:
         if len(self.trees) == 0:
             raise ValueError('There are no trees available')
 
-        n_classes = len(self.clf._classes)  # pylint: disable=no-member
+        encoded_dataset = self.encode_dataset(dataset)
 
-        preds = np.array([tree.predict(dataset.X) for tree in self.trees])
+        n_classes = len(self.clf.classes_)  # pylint: disable=no-member
+
+        preds = np.array([tree.predict(encoded_dataset.X)
+                          for tree in self.trees])
         preds = np.sum(preds, axis=0)
 
         if n_classes > 2:

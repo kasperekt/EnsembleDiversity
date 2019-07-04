@@ -29,10 +29,11 @@ class Dataset(object):
                        dataset.feature_names, dataset.target_names, name=name)
 
     @staticmethod
-    def from_openml(name):
-        dataset = fetch_openml(name)
+    def from_openml(name, version='active'):
+        dataset = fetch_openml(name, version=version)
 
         feature_names = dataset.feature_names if 'feature_names' in dataset else None
+        categories = dataset.categories
 
         if 'target_names' in dataset:
             target_names = dataset.target_names
@@ -46,7 +47,7 @@ class Dataset(object):
 
         return Dataset(dataset.data, target,
                        feature_names, target_names,
-                       name=name, categories=dataset.categories)
+                       name=name, categories=categories)
 
     @staticmethod
     def create_iris():

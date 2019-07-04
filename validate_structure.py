@@ -2,7 +2,7 @@ import sys
 import numpy as np
 
 from typing import Tuple
-from data import Dataset
+from data import Dataset, load_all_datasets
 from structure import AdaboostEnsemble, RandomForestEnsemble, LGBEnsemble, CatboostEnsemble, XGBoostEnsemble, BaggingEnsemble
 from sklearn.datasets import load_iris, load_breast_cancer
 from sklearn.model_selection import ParameterGrid
@@ -51,28 +51,30 @@ def validate(ValidatorType, name, data: Data, param_grid: ParameterGrid, verbose
         print(f'{name}, dataset={train_data.name}, acc={compat_general_acc}')
 
 
-def validate_ada(*args, **kwargs):
-    return validate(AdaboostEnsemble, 'AdaBoost', *args, **kwargs)
+def validate_ada(dataset, param_grid, **kwargs):
+    return validate(AdaboostEnsemble, 'AdaBoost', dataset, param_grid, **kwargs)
 
 
-def validate_rf(*args, **kwargs):
-    return validate(RandomForestEnsemble, 'RandomForest', *args, **kwargs)
+def validate_rf(dataset, param_grid, **kwargs):
+    return validate(RandomForestEnsemble, 'RandomForest', dataset, param_grid, **kwargs)
 
 
-def validate_lgb(*args, **kwargs):
-    return validate(LGBEnsemble, 'LGB', *args, **kwargs)
+def validate_lgb(dataset, param_grid, **kwargs):
+    grid_copy = ParameterGrid(
+        {**param_grid.param_grid[0], 'num_leaves': [500]})
+    return validate(LGBEnsemble, 'LGB', dataset, grid_copy, **kwargs)
 
 
-def validate_cb(*args, **kwargs):
-    return validate(CatboostEnsemble, 'Catboost', *args, **kwargs)
+def validate_cb(dataset, param_grid, **kwargs):
+    return validate(CatboostEnsemble, 'Catboost', dataset, param_grid, **kwargs)
 
 
-def validate_xgb(*args, **kwargs):
-    return validate(XGBoostEnsemble, 'XGBoost', *args, **kwargs)
+def validate_xgb(dataset, param_grid, **kwargs):
+    return validate(XGBoostEnsemble, 'XGBoost', dataset, param_grid, **kwargs)
 
 
-def validate_bag(*args, **kwargs):
-    return validate(BaggingEnsemble, 'Bagging', *args, **kwargs)
+def validate_bag(dataset, param_grid, **kwargs):
+    return validate(BaggingEnsemble, 'Bagging', dataset, param_grid, **kwargs)
 
 
 VALIDATORS = {
@@ -86,15 +88,16 @@ VALIDATORS = {
 
 
 def validate_structure(used_validators={'ada', 'rf'}, verbose=False):
-    iris = Dataset.create_iris().split(test_size=0.8)
-    cancer = Dataset.create_cancer().split(test_size=0.8)
-    aids = Dataset.from_openml('aids').split(test_size=0.8)
-    datasets = [iris, cancer, aids]
+    train_sets, val_sets = load_all_datasets(test_size=0.5)
 
     param_grid = ParameterGrid({
-        'max_depth': range(2, 10),
-        'n_estimators': range(1, 100, 10)
+        'max_depth': range(2, 8),
+        'n_estimators': range(1, 10, 2),
     })
+
+    total = 0
+    passed = 0
+    failed = 0
 
     for validator_key in used_validators:
         if validator_key not in VALIDATORS:
@@ -103,8 +106,25 @@ def validate_structure(used_validators={'ada', 'rf'}, verbose=False):
 
         validator = VALIDATORS[validator_key]
 
-        for dataset in datasets:
-            validator(dataset, param_grid, verbose)
+        for dataset in zip(train_sets, val_sets):
+            total += 1
+
+            try:
+                validator(dataset, param_grid, verbose=verbose)
+                passed += 1
+            except Exception as err:
+                failed += 1
+                print(
+                    f'Error: Model = {validator_key}, Dataset = {dataset[0].name} ', file=sys.stderr)
+
+                if verbose:
+                    print(err, file=sys.stderr)
+
+    print()
+    print(f'TOTAL: {total}')
+    print(f'PASSED: {passed}')
+    print(f'FAILED: {failed}')
+    print(f'SUCCESS RATE: {passed / total}')
 
 
 if __name__ == '__main__':

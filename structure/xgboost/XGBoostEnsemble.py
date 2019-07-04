@@ -10,15 +10,15 @@ from .XGBoostTree import XGBoostTree
 
 class XGBoostEnsemble(Ensemble):
     def __init__(self, params):
+        # Always use all cores
+        params['n_jobs'] = -1
+
         super().__init__(params, name='XGBoostEnsemble')
         self.clf = xgb.XGBClassifier(**params)
-        self.dataset_encoder = None
 
     def fit(self, dataset: Dataset):
-        if self.dataset_encoder is None:
-            self.dataset_encoder = DatasetEncoder.create_one_hot(dataset)
-
-        encoded_dataset = self.dataset_encoder.transform(dataset)
+        self.create_encoder(dataset)
+        encoded_dataset = self.encode_dataset(dataset)
 
         self.trees = []
         self.clf.fit(encoded_dataset.X, encoded_dataset.y)
@@ -37,10 +37,7 @@ class XGBoostEnsemble(Ensemble):
         if len(self.trees) == 0:
             raise ValueError('There are no trees available')
 
-        if self.dataset_encoder is None:
-            raise ValueError('No dataset encoder available')
-
-        encoded_dataset = self.dataset_encoder.transform(dataset)
+        encoded_dataset = self.encode_dataset(dataset)
 
         n_classes = len(self.clf.classes_)
         n_estimators = self.clf.n_estimators
