@@ -1,6 +1,6 @@
 import numpy as np
 
-from .Experiment import Experiment
+from .Experiment import Experiment, ExperimentVariant
 from typing import List
 from data import Dataset
 from structure import CatboostEnsemble
@@ -9,8 +9,8 @@ from sklearn.metrics import accuracy_score
 
 
 class CatboostExperiment(Experiment):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, variant: str = ExperimentVariant.INDIVIDUAL):
+        super().__init__(variant)
 
         self.EnsembleType = CatboostEnsemble
 

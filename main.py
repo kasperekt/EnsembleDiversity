@@ -8,16 +8,16 @@ from typing import List
 from sklearn.datasets import load_iris, load_breast_cancer
 
 
-def run_experiment():
+def run_experiment(variant: str):
     train_datasets, val_datasets = load_all_datasets(test_size=0.5)
 
     experiments = [
-        AdaboostExperiment(),
-        RandomForestExperiment(),
-        BaggingExperiment(),
-        LGBExperiment(),
-        CatboostExperiment(),
-        XGBoostExperiment(),
+        AdaboostExperiment(variant),
+        RandomForestExperiment(variant),
+        BaggingExperiment(variant),
+        LGBExperiment(variant),
+        CatboostExperiment(variant),
+        XGBoostExperiment(variant),
     ]
 
     for exp in experiments:
@@ -26,5 +26,13 @@ def run_experiment():
 
 
 if __name__ == '__main__':
+    import argparse
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--variant', default='shared',
+                        choices=['individual', 'shared'])
+
+    args = parser.parse_args()
+
     prepare_env()
-    run_experiment()
+    run_experiment(args.variant)

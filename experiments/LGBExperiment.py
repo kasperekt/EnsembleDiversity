@@ -1,7 +1,7 @@
 import lightgbm as lgb
 
 from typing import List
-from .Experiment import Experiment
+from .Experiment import Experiment, ExperimentVariant
 from data import Dataset
 from structure import LGBEnsemble
 from sklearn.metrics import accuracy_score
@@ -9,8 +9,8 @@ from sklearn.model_selection import ParameterGrid
 
 
 class LGBExperiment(Experiment):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, variant: str = ExperimentVariant.INDIVIDUAL):
+        super().__init__(variant)
 
         self.EnsembleType = LGBEnsemble
 
