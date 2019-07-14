@@ -13,7 +13,7 @@ class LeafValueTree(Tree):
     def leaf_node_result(self, leaf_node):
         return leaf_node['value']
 
-    def recurse(self, X, node_idx):
+    def traverse(self, X, node_idx):
         if len(self.tree.nodes) == 0:
             return 0
 
@@ -37,18 +37,18 @@ class LeafValueTree(Tree):
             if child['is_leaf']:
                 return self.leaf_node_result(child)
 
-            return self.recurse(X, left_child_idx)
+            return self.traverse(X, left_child_idx)
         else:
             child = self.tree.nodes[right_child_idx]
 
             if child['is_leaf']:
                 return self.leaf_node_result(child)
 
-            return self.recurse(X, right_child_idx)
+            return self.traverse(X, right_child_idx)
 
     def predict(self, data: np.ndarray) -> np.ndarray:
         root_idx = self.node_name(0)
-        return np.array([self.recurse(X, root_idx) for X in data], dtype=np.float)
+        return np.array([self.traverse(X, root_idx) for X in data], dtype=np.float)
 
     def __repr__(self):
         return f'LeafValueTree<nodes_len={len(self.tree.nodes)}>'

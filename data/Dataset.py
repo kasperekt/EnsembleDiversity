@@ -6,7 +6,6 @@ from sklearn.preprocessing import OneHotEncoder, LabelEncoder
 from sklearn.compose import ColumnTransformer
 from sklearn.model_selection import train_test_split
 from sklearn.datasets import load_iris, load_breast_cancer, fetch_openml
-from .DatasetEncoder import DatasetEncoder
 
 
 class Dataset(object):
