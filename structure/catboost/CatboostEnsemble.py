@@ -9,25 +9,24 @@ from scipy.special import expit, softmax  # pylint: disable=no-name-in-module
 
 
 class CatboostEnsemble(Ensemble):
-    def __init__(self, params):
-        super().__init__(params, name='CatboostEnsemble')
+    def __init__(self, params: dict, dataset: Dataset = None):
+        super().__init__(params, dataset, name='CatboostEnsemble')
         self.clf = CatBoostClassifier(**params)
         self.tmp_json_path = '/tmp/catboost.model.json'
 
     def fit(self, dataset: Dataset):
-        self.create_encoder(dataset)
-        encoded_dataset = self.encode_dataset(dataset)
+        self.set_dataset(dataset)
 
-        loss_function = 'MultiClass' if encoded_dataset.num_classes() > 2 else 'Logloss'
+        loss_function = 'MultiClass' if self.dataset.num_classes() > 2 else 'Logloss'
         self.clf.set_params(loss_function=loss_function, verbose=False)
 
-        self.clf.fit(encoded_dataset.X, encoded_dataset.y)
+        self.clf.fit(self.dataset.X, self.dataset.y)
 
         self.clf.save_model(self.tmp_json_path, format='json')
         with open(self.tmp_json_path, 'r') as fp:
             model = json.load(fp)
 
-        self.trees = [CatboostTree.parse(tree, encoded_dataset)
+        self.trees = [CatboostTree.parse(tree, self.dataset)
                       for tree in model['oblivious_trees']]
 
     def predict_proba(self, dataset: Dataset) -> np.ndarray:

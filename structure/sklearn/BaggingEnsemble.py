@@ -1,15 +1,16 @@
 from .SklearnEnsemble import SklearnEnsemble
 
+from data import Dataset
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import BaggingClassifier
 
 
 class BaggingEnsemble(SklearnEnsemble):
-    def __init__(self, params: dict):
+    def __init__(self, params: dict, dataset: Dataset = None):
         # Always use all cores
         params['n_jobs'] = -1
 
-        super().__init__(params, 'Bagging')
+        super().__init__(params, dataset, name='Bagging')
 
         clf_params = params.copy()
         del clf_params['max_depth']

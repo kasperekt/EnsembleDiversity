@@ -8,16 +8,16 @@ from . import SklearnTree
 
 
 class SklearnEnsemble(Ensemble, metaclass=ABCMeta):
-    def __init__(self, params: dict, name='Sklearn'):
+    def __init__(self, params: dict, dataset: Dataset = None, name='Sklearn'):
         super().__init__(params, name=name)
         self.clf = None
+        self.dataset = dataset
 
     def fit(self, dataset: Dataset):
-        self.create_encoder(dataset)
-        encoded_dataset = self.encode_dataset(dataset)
+        self.set_dataset(dataset)
 
-        self.clf.fit(encoded_dataset.X, encoded_dataset.y)
-        self.trees = [SklearnTree.parse(tree, encoded_dataset)
+        self.clf.fit(self.dataset.X, self.dataset.y)
+        self.trees = [SklearnTree.parse(tree, self.dataset, with_coverage=True)
                       for tree in self.clf.estimators_]
 
     def predict(self, dataset: Dataset) -> np.ndarray:

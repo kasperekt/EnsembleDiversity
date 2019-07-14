@@ -9,27 +9,26 @@ from .XGBoostTree import XGBoostTree
 
 
 class XGBoostEnsemble(Ensemble):
-    def __init__(self, params):
+    def __init__(self, params: dict, dataset: Dataset = None):
         # Always use all cores
         params['n_jobs'] = -1
 
-        super().__init__(params, name='XGBoostEnsemble')
+        super().__init__(params, dataset, name='XGBoostEnsemble')
         self.clf = xgb.XGBClassifier(**params)
 
     def fit(self, dataset: Dataset):
-        self.create_encoder(dataset)
-        encoded_dataset = self.encode_dataset(dataset)
+        self.set_dataset(dataset)
 
         self.trees = []
-        self.clf.fit(encoded_dataset.X, encoded_dataset.y)
+        self.clf.fit(self.dataset.X, self.dataset.y)
 
-        n_classes = encoded_dataset.num_classes()
+        n_classes = self.dataset.num_classes()
         n_estimators = self.clf.n_estimators
         n_trees = n_estimators * n_classes if n_classes > 2 else n_estimators
 
         for tree_idx in range(0, n_trees):
             tree = xgb.to_graphviz(self.clf, num_trees=tree_idx)
-            parsed_tree = XGBoostTree.parse(str(tree), encoded_dataset)
+            parsed_tree = XGBoostTree.parse(str(tree), self.dataset)
 
             self.trees.append(parsed_tree)
 

@@ -2,15 +2,16 @@ import numpy as np
 
 from sklearn.tree import DecisionTreeClassifier
 from data import Dataset
-from structure import Tree
+from structure import Tree, TreeCoverage
 
 
 class SklearnTree(Tree):
     def __init__(self, dataset: Dataset, clf_type="Sklearn"):
         super().__init__(dataset, clf_type=clf_type)
+        self.coverage_dict = None
 
     @staticmethod
-    def parse(decision_tree: DecisionTreeClassifier, dataset: Dataset):
+    def parse(decision_tree: DecisionTreeClassifier, dataset: Dataset, with_coverage=False):
         tree_structure = SklearnTree(dataset, 'Sklearn')
 
         children_left = decision_tree.tree_.children_left
@@ -49,6 +50,10 @@ class SklearnTree(Tree):
                 #     tree_structure.add_leaf(node, target=i, fraction=v)
 
         traverse(0)
+
+        if with_coverage:
+            tree_structure.coverage_dict = TreeCoverage.parse(
+                tree_structure, dataset)
 
         return tree_structure
 

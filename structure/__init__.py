@@ -1,6 +1,7 @@
 from .Ensemble import Ensemble
 from .Tree import Tree
 from .LeafValueTree import LeafValueTree
+from .TreeCoverage import TreeCoverage
 
 from .catboost import *
 from .lgb import *
@@ -21,5 +22,6 @@ __all__ = [
     'CatboostTree',
     'CatboostEnsemble',
     'XGBoostTree',
-    'XGBoostEnsemble'
+    'XGBoostEnsemble',
+    'TreeCoverage'
 ]

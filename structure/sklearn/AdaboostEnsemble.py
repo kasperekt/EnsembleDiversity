@@ -7,8 +7,8 @@ from sklearn.tree import DecisionTreeClassifier
 
 
 class AdaboostEnsemble(SklearnEnsemble):
-    def __init__(self, params):
-        super().__init__(params, name='Adaboost')
+    def __init__(self, params, dataset: Dataset = None):
+        super().__init__(params, dataset, name='Adaboost')
 
         clf_params = {**params}
         del clf_params['max_depth']
