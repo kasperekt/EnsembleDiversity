@@ -6,6 +6,7 @@ from typing import List, Dict
 from data import Dataset
 from collections import namedtuple
 from enum import Enum
+from structure import Ensemble
 
 from sklearn.model_selection import ParameterGrid
 from sklearn.metrics import accuracy_score
@@ -30,8 +31,8 @@ class Experiment(metaclass=ABCMeta):
 
     def build_shared_param_grid(self):
         return ParameterGrid({
-            'n_estimators': np.arange(1, 50, 5),
-            'max_depth': np.arange(2, 8, 2)
+            'n_estimators': np.arange(5, 100, 5),
+            'max_depth': np.arange(2, 8, 1)
         })
 
     def add_result(self, **kwargs):
@@ -66,21 +67,29 @@ class Experiment(metaclass=ABCMeta):
 
                 print(f'[{train.name}] Params: {final_params}')
 
-                ensemble = self.EnsembleType(  # pylint: disable=not-callable
+                ensemble: Ensemble = self.EnsembleType(  # pylint: disable=not-callable
                     final_params)
                 ensemble.fit(train)
 
                 preds = ensemble.predict(val)
                 accuracy = accuracy_score(val.y, preds)
 
-                node_diversity = ensemble.node_diversity()
-
                 result_dict = {
                     'name': ensemble.name,
                     'dataset_name': train.name,
                     'accuracy': accuracy,
-                    'node_diversity': node_diversity,
-                    **params
+                    **params,
+                    # Structural Measures
+                    'node_diversity': ensemble.node_diversity(),
+                    'coverage_std': ensemble.coverage_leaves_std(),
+                    'coverage_minmax': ensemble.coverage_leaves_minmax(),
+                    'used_attributes_ratio': ensemble.used_attributes_ratio(),
+                    # Behavioral Measures
+                    'entropy': ensemble.entropy(val),
+                    'q': ensemble.q(val),
+                    'df': ensemble.df(val),
+                    'kw': ensemble.kw(val),
+                    'corr': ensemble.corr(val)
                 }
 
                 self.add_result(**result_dict)

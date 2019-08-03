@@ -29,6 +29,7 @@ class Dataset(object):
 
     @staticmethod
     def from_openml(name, version='active'):
+        print(f'Downloading {name} set.')
         dataset = fetch_openml(name, version=version)
 
         feature_names = dataset.feature_names if 'feature_names' in dataset else None
@@ -61,6 +62,9 @@ class Dataset(object):
 
     def num_classes(self):
         return len(self.target_names)
+
+    def num_features(self):
+        return len(self.feature_names)
 
     def split(self, test_size=0.1):
         X_train, X_val, y_train, y_val = train_test_split(

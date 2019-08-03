@@ -3,6 +3,7 @@ import warnings
 
 from abc import ABCMeta, abstractmethod
 from typing import List
+from measures import bin_corr, bin_q, bin_entropy, bin_df, bin_kw
 from data import Dataset, DatasetEncoder
 from .Tree import Tree
 from .TreeCoverage import TreeCoverage
@@ -48,9 +49,94 @@ class Ensemble(metaclass=ABCMeta):
         warnings.warn(
             'ATTENTION! Cannot encode dataset. It won\'t have transformed features as one-hot vectors.')
 
+    def used_attributes_ratio(self) -> float:
+        if self.dataset is None:
+            return -1
+
+        attributes = set()
+
+        for tree in self.trees:
+            attributes.update(tree.attributes_used())
+
+        return len(attributes) / self.dataset.num_features()
+
     def node_diversity(self) -> float:
         node_counts = np.array([tree.num_nodes() for tree in self.trees])
         return node_counts.std()
+
+    def coverage_leaves_std(self) -> float:
+        acc = []
+
+        for coverage in self.get_coverage():
+            leaves_dict = coverage.get_leaves_dict()
+            sizes = np.array([len(items) for items in leaves_dict.values()])
+            acc.append((sizes / np.sum(sizes)).std())
+
+        return np.std(acc)
+
+    def coverage_leaves_minmax(self) -> float:
+        acc = []
+
+        for coverage in self.get_coverage():
+            leaves_dict = coverage.get_leaves_dict()
+            sizes = np.array([len(items) for items in leaves_dict.values()])
+            sizes = sizes / np.sum(sizes)
+            acc.append(sizes.max() - sizes.min())
+
+        return np.std(acc)
+
+    def q(self, val_set: Dataset) -> float:
+        results = []
+        tree_preds = [tree.predict(val_set.X, labeled_result=True)
+                      for tree in self.trees]
+
+        for i in range(0, len(tree_preds)):
+            for j in range(0, len(tree_preds)):
+                if i == j:
+                    continue
+
+                results.append(bin_q(val_set.y, tree_preds[i], tree_preds[j]))
+
+        return np.average(results)
+
+    def df(self, val_set: Dataset) -> float:
+        results = []
+        tree_preds = [tree.predict(val_set.X, labeled_result=True)
+                      for tree in self.trees]
+
+        for i in range(0, len(tree_preds)):
+            for j in range(0, len(tree_preds)):
+                if i == j:
+                    continue
+
+                results.append(bin_df(val_set.y, tree_preds[i], tree_preds[j]))
+
+        return np.average(results)
+
+    def corr(self, val_set: Dataset) -> float:
+        results = []
+        tree_preds = [tree.predict(val_set.X, labeled_result=True)
+                      for tree in self.trees]
+
+        for i in range(0, len(tree_preds)):
+            for j in range(0, len(tree_preds)):
+                if i == j:
+                    continue
+
+                results.append(
+                    bin_corr(val_set.y, tree_preds[i], tree_preds[j]))
+
+        return np.average(results)
+
+    def entropy(self, val_set: Dataset) -> float:
+        tree_preds = [tree.predict(val_set.X, labeled_result=True)
+                      for tree in self.trees]
+        return bin_entropy(val_set.y, tree_preds)
+
+    def kw(self, val_set: Dataset) -> float:
+        tree_preds = [tree.predict(val_set.X, labeled_result=True)
+                      for tree in self.trees]
+        return bin_kw(val_set.y, tree_preds)
 
     def clf_predict(self, dataset: Dataset) -> np.ndarray:
         if self.clf is None:

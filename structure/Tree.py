@@ -24,7 +24,7 @@ class Tree(object):
         raise NotImplementedError('"leaf_label" method is not implemented')
 
     @abstractmethod
-    def predict(self, data: np.ndarray) -> np.ndarray:
+    def predict(self, data: np.ndarray, labeled_result=False) -> np.ndarray:
         raise NotImplementedError('"predict" method not implemented.')
 
     @abstractmethod
@@ -69,6 +69,10 @@ class Tree(object):
             return lvalue <= rvalue
 
         raise ValueError(f'{cond_type} is not implemented.')
+
+    def attributes_used(self) -> set:
+        return {data['feature'] for idx, data in self.tree.nodes(
+            data=True) if not data['is_leaf']}
 
     def draw(self, path: str):
         tree_copy = self.tree.copy()

@@ -5,7 +5,7 @@ MULTI_CLASS_SETS = [('iris', 'active'), ('aids', 'active'),
                     ('spectrometer', 'active')]
 
 BINARY_CLASS_SETS = [('SPECT', 'active'), ('oil_spill', 'active'),
-                     ('splice', 'active'), ('segment', '2'),
+                     ('splice', '2'), ('segment', '2'),
                      ('ionosphere', 'active'), ('sonar', 'active'),
                      ('pyrim', '2'), ('pollution', '2'),
                      ('boston', '2'), ('glass', '2'),

@@ -100,7 +100,7 @@ class SklearnTree(Tree):
 
             return self.predict_traverse(X, right_child_idx, verbose=verbose)
 
-    def predict(self, data: np.ndarray, verbose=False) -> np.ndarray:
+    def predict(self, data: np.ndarray, verbose=False, **kwargs) -> np.ndarray:
         if len(self.tree) < 2:
             leaf_idx = self.leaf_name(0)
             leaf_node = self.tree.nodes[leaf_idx]

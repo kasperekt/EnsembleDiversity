@@ -1,5 +1,6 @@
 import numpy as np
 
+from scipy.special import expit
 from .Tree import Tree
 
 
@@ -46,9 +47,17 @@ class LeafValueTree(Tree):
 
             return self.traverse(X, right_child_idx)
 
-    def predict(self, data: np.ndarray) -> np.ndarray:
+    def predict(self, data: np.ndarray, labeled_result=False) -> np.ndarray:
         root_idx = self.node_name(0)
-        return np.array([self.traverse(X, root_idx) for X in data], dtype=np.float)
+
+        preds = np.array([self.traverse(X, root_idx)
+                          for X in data], dtype=np.float)
+
+        if labeled_result:
+            proba = np.array([[1 - v, v] for v in expit(preds)])
+            return np.argmax(proba, axis=1)
+
+        return preds
 
     def __repr__(self):
         return f'LeafValueTree<nodes_len={len(self.tree.nodes)}>'
