@@ -37,6 +37,7 @@ class CatboostEnsemble(Ensemble):
 
         n_classes = len(self.clf.classes_)  # pylint: disable=no-member
 
+        # TODO: For single tree this is just [tree.predict(...)]
         preds = np.array([tree.predict(encoded_dataset.X)
                           for tree in self.trees])
         preds = np.sum(preds, axis=0)
@@ -46,7 +47,8 @@ class CatboostEnsemble(Ensemble):
             # Link above suggests different equation for this
             results_proba = softmax(preds, axis=1)
         else:
-            results_proba = np.array([[1 - v, v] for v in expit(preds)])
+            # results_proba = np.array([[1 - v, v] for v in expit(preds)])
+            raise NotImplementedError('Only binary problems are implemented.')
 
         return results_proba
 

@@ -24,6 +24,9 @@ class SklearnEnsemble(Ensemble, metaclass=ABCMeta):
         if len(self.trees) == 0:
             raise ValueError('There are no trees available')
 
+        if dataset.num_classes() > 2:
+            raise NotImplementedError('Only binary problems are implemented.')
+
         encoded_dataset = self.encode_dataset(dataset)
 
         predictions = np.array([tree.predict(encoded_dataset.X)

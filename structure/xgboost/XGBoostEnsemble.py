@@ -46,9 +46,10 @@ class XGBoostEnsemble(Ensemble):
                                 for tree in self.trees])
 
         if n_classes > 2:
-            predictions = np.rollaxis(predictions, axis=1).reshape(
-                (n_examples, n_estimators, n_classes))
-            probs = sp.softmax(np.sum(predictions, axis=1), axis=1)
+            # predictions = np.rollaxis(predictions, axis=1).reshape(
+            #     (n_examples, n_estimators, n_classes))
+            # probs = sp.softmax(np.sum(predictions, axis=1), axis=1)
+            raise NotImplementedError('Only binary problems are implemented.')
         else:
             activated = sp.expit(np.sum(predictions, axis=0))
             probs = np.array([np.array([1 - prob, prob])
