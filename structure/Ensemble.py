@@ -70,7 +70,13 @@ class Ensemble(metaclass=ABCMeta):
         for coverage in self.get_coverage():
             leaves_dict = coverage.get_leaves_dict()
             sizes = np.array([len(items) for items in leaves_dict.values()])
-            acc.append((sizes / np.sum(sizes)).std())
+
+            sum_sizes = np.sum(sizes)
+            if sum_sizes != 0:
+                acc.append((sizes / np.sum(sizes)).std())
+
+        if len(acc) < 1:
+            return 0
 
         return np.std(acc)
 
@@ -78,10 +84,16 @@ class Ensemble(metaclass=ABCMeta):
         acc = []
 
         for coverage in self.get_coverage():
+            if coverage.size() == 0:
+                continue
+
             leaves_dict = coverage.get_leaves_dict()
             sizes = np.array([len(items) for items in leaves_dict.values()])
             sizes = sizes / np.sum(sizes)
             acc.append(sizes.max() - sizes.min())
+
+        if len(acc) < 1:
+            return 0
 
         return np.std(acc)
 
@@ -97,6 +109,9 @@ class Ensemble(metaclass=ABCMeta):
 
                 results.append(bin_q(val_set.y, tree_preds[i], tree_preds[j]))
 
+        if len(results) < 1:
+            return 0
+
         return np.average(results)
 
     def df(self, val_set: Dataset) -> float:
@@ -110,6 +125,9 @@ class Ensemble(metaclass=ABCMeta):
                     continue
 
                 results.append(bin_df(val_set.y, tree_preds[i], tree_preds[j]))
+
+        if len(results) < 1:
+            return 0
 
         return np.average(results)
 
@@ -125,6 +143,9 @@ class Ensemble(metaclass=ABCMeta):
 
                 results.append(
                     bin_corr(val_set.y, tree_preds[i], tree_preds[j]))
+
+        if len(results) < 1:
+            return 0
 
         return np.average(results)
 
@@ -149,5 +170,5 @@ class Ensemble(metaclass=ABCMeta):
         raise NotImplementedError
 
     @abstractmethod
-    def predict(self, X: np.ndarray) -> np.ndarray:
+    def predict(self, data: Dataset) -> np.ndarray:
         raise NotImplementedError

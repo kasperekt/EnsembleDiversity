@@ -13,6 +13,9 @@ class TreeCoverage(object):
     def __repr__(self):
         return str(self.coverage_dict)
 
+    def size(self):
+        return len(self.coverage_dict)
+
     def add_entry(self, node_idx: str, values: np.ndarray):
         self.coverage_dict[node_idx] = values
 
@@ -35,7 +38,7 @@ class TreeCoverage(object):
     @staticmethod
     def parse(tree: Tree, dataset: Dataset):
         if len(tree.tree) < 2:
-            raise NotImplementedError
+            return TreeCoverage(dataset)
 
         root_idx = tree.node_name(0)
         original_indices = np.array(list(range(0, len(dataset.X))))
