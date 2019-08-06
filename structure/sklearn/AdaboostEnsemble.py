@@ -34,6 +34,8 @@ class AdaboostEnsemble(SklearnEnsemble):
             preds[:, 0] *= -1
             preds = preds.sum(axis=1)
             return self.clf.classes_.take(preds > 0, axis=0)
+        else:
+            raise NotImplementedError('Only binary problems are implemented.')
 
         preds = np.argmax(preds, axis=1)
         return self.clf.classes_.take(preds, axis=0)
