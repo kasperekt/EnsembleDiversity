@@ -29,19 +29,29 @@ def confusion_matrix(true_pred: np.ndarray, pred_a: np.ndarray, pred_b: np.ndarr
 
 def bin_q(true_pred: np.ndarray, pred_a: np.ndarray, pred_b: np.ndarray) -> float:
     cm = confusion_matrix(true_pred, pred_a, pred_b)
-    return ((cm[0, 0] * cm[1, 1] - cm[1, 0] * cm[0, 1]) /
-            (cm[0, 0] * cm[1, 1] + cm[1, 0] * cm[0, 1]))
+
+    denominator = (cm[0, 0] * cm[1, 1] + cm[1, 0] * cm[0, 1])
+
+    if denominator == 0:
+        return 0
+
+    return (cm[0, 0] * cm[1, 1] - cm[1, 0] * cm[0, 1]) / denominator
 
 
 def bin_corr(true_pred: np.ndarray, pred_a: np.ndarray, pred_b: np.ndarray) -> float:
     cm = confusion_matrix(true_pred, pred_a, pred_b)
-    return ((cm[0, 0] * cm[1, 1] - cm[1, 0] * cm[0, 1]) /
-            np.sqrt(
-                (cm[0, 0] + cm[0, 1]) *
-                (cm[1, 0] + cm[1, 1]) *
-                (cm[0, 0] + cm[1, 0]) *
-                (cm[0, 1] + cm[1, 1])
-    ))
+
+    denominator = np.sqrt(
+        (cm[0, 0] + cm[0, 1]) *
+        (cm[1, 0] + cm[1, 1]) *
+        (cm[0, 0] + cm[1, 0]) *
+        (cm[0, 1] + cm[1, 1])
+    )
+
+    if denominator == 0:
+        return 0
+
+    return (cm[0, 0] * cm[1, 1] - cm[1, 0] * cm[0, 1]) / denominator
 
 
 def bin_df(true_pred: np.ndarray, pred_a: np.ndarray, pred_b: np.ndarray) -> float:

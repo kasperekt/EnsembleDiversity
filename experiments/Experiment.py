@@ -19,13 +19,14 @@ class ExperimentVariant(Enum):
 
 
 class Experiment(metaclass=ABCMeta):
-    def __init__(self, variant: str = ExperimentVariant.SHARED):
+    def __init__(self, variant: str = ExperimentVariant.SHARED, cv: bool = False):
         self.results: List[any] = []
         self.EnsembleType: callable = None
         self.param_grid: ParameterGrid = None
         self.shared_param_grid: ParameterGrid = self.build_shared_param_grid()
         self.name = 'Experiment'
         self.variant = variant
+        self.cv = cv
 
     def reset(self):
         self.results = []
@@ -79,7 +80,7 @@ class Experiment(metaclass=ABCMeta):
             'corr': ensemble.corr(val)
         }
 
-    def run(self, train_data: List[Dataset], val_data: List[Dataset]):
+    def run(self, datasets: List[Dataset]):
         if self.EnsembleType is None:
             raise ValueError('Ensemble type is not specified')
 
@@ -93,12 +94,18 @@ class Experiment(metaclass=ABCMeta):
         def collect(result_dict):
             self.add_result(**result_dict)
 
-        for train, val in zip(train_data, val_data):
+        for dataset in datasets:
             grid = self.param_grid if self.variant == 'individual' else self.shared_param_grid
 
-            for params in grid:  # pylint: disable=not-an-iterable
-                pool.apply_async(self.process, args=(
-                    train, val, params), callback=collect)
+            for params in grid:   # pylint: disable=not-an-iterable
+                if self.cv:
+                    for train, val in dataset.n_splits(10):
+                        pool.apply_async(self.process, args=(
+                            train, val, params), callback=collect)
+                else:
+                    train, val = dataset.split(0.2)
+                    pool.apply_async(self.process, args=(
+                        train, val, params), callback=collect)
 
         pool.close()
         pool.join()

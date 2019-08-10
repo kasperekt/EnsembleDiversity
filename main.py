@@ -8,20 +8,18 @@ from typing import List
 from sklearn.datasets import load_iris, load_breast_cancer
 
 
-def run_experiment(variant: str):
-    train_datasets, val_datasets = load_all_datasets(test_size=0.5)
-
+def run_experiment(variant: str, cv: bool):
     experiments = [
-        AdaboostExperiment(variant),
-        RandomForestExperiment(variant),
-        BaggingExperiment(variant),
-        LGBExperiment(variant),
-        CatboostExperiment(variant),
-        XGBoostExperiment(variant),
+        AdaboostExperiment(variant, cv),
+        RandomForestExperiment(variant, cv),
+        BaggingExperiment(variant, cv),
+        LGBExperiment(variant, cv),
+        CatboostExperiment(variant, cv),
+        XGBoostExperiment(variant, cv),
     ]
 
     for exp in experiments:
-        exp.run(train_datasets, val_datasets)
+        exp.run(load_all_datasets())
         exp.to_csv(os.path.join(OUT_DIR, f'{exp.name.lower()}-ensemble.csv'))
 
 
@@ -31,8 +29,9 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--variant', default='shared',
                         choices=['individual', 'shared'])
+    parser.add_argument('--cv', action='store_true')
 
     args = parser.parse_args()
 
     prepare_env()
-    run_experiment(args.variant)
+    run_experiment(args.variant, args.cv)

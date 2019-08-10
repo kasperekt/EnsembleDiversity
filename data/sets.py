@@ -39,4 +39,4 @@ def load_all_datasets(test_size=0.0, sets=BINARY_CLASS_SETS):
 
         return train_sets, val_sets
 
-    return datasets, None
+    return datasets

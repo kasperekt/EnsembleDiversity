@@ -4,7 +4,7 @@ import sklearn
 from typing import Tuple
 from sklearn.preprocessing import OneHotEncoder, LabelEncoder
 from sklearn.compose import ColumnTransformer
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split, KFold
 from sklearn.datasets import load_iris, load_breast_cancer, fetch_openml
 
 
@@ -65,6 +65,22 @@ class Dataset(object):
 
     def num_features(self):
         return len(self.feature_names)
+
+    def n_splits(self, splits=10):
+        datasets = []
+
+        for train_idx, val_idx in KFold(n_splits=splits).split(self.X):
+            X_train, y_train = self.X[train_idx], self.y[train_idx]
+            X_val, y_val = self.X[val_idx], self.y[val_idx]
+
+            datasets.append((
+                Dataset(X_train, y_train, self.feature_names,
+                        self.target_names, name=self.name),
+                Dataset(X_val, y_val, self.feature_names,
+                        self.target_names, name=self.name)
+            ))
+
+        return datasets
 
     def split(self, test_size=0.1):
         X_train, X_val, y_train, y_val = train_test_split(

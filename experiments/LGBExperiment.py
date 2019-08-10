@@ -9,8 +9,8 @@ from sklearn.model_selection import ParameterGrid
 
 
 class LGBExperiment(Experiment):
-    def __init__(self, variant: str = ExperimentVariant.INDIVIDUAL):
-        super().__init__(variant)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
 
         self.EnsembleType = LGBEnsemble
 
