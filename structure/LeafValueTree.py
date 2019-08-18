@@ -8,8 +8,13 @@ class LeafValueTree(Tree):
     def __init__(self, dataset, clf_type='n/d'):
         super().__init__(dataset, clf_type=clf_type)
 
-    def leaf_label(self, node_data):
-        return str(node_data['value'])
+    def leaf_label(self, node_data, pretty=False):
+        value = node_data['value']
+
+        if pretty:
+            value = round(value, 3)
+
+        return str(value)
 
     def leaf_node_result(self, leaf_node):
         return leaf_node['value']

@@ -61,8 +61,12 @@ class SklearnTree(Tree):
         self.tree.add_node(self.leaf_name(idx), target=target,
                            fraction=fraction, is_leaf=True)
 
-    def leaf_label(self, node_data: dict) -> str:
+    def leaf_label(self, node_data: dict, pretty=False) -> str:
         target = node_data['target']
+
+        if pretty:
+            return self.dataset.target_names[target]
+
         target_name = self.dataset.target_names[target] if target != -1 else 'n/d'
         return f"{target_name}\n{node_data['fraction']}"
 

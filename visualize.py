@@ -43,7 +43,7 @@ def visualize():
 
     for name in names:
         df = pd.read_csv(result_path(
-            name, out_dir='../EnsembleDiversityResults/experiments-10-08'))
+            name, out_dir='../EnsembleDiversityResults/experiments-17-08'))
 
         scatterplot(df, name + '__node-diversity',
                     x='node_diversity', datasets=datasets)

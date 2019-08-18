@@ -20,8 +20,19 @@ class Tree(object):
         return f'Leaf_{idx}'
 
     @abstractmethod
-    def leaf_label(self, node_data: dict):
+    def leaf_label(self, node_data: dict, pretty=False):
         raise NotImplementedError('"leaf_label" method is not implemented')
+
+    @abstractmethod
+    def node_label(self, node_data: dict, pretty=False):
+        feature = self.dataset.feature_names[node_data['feature']]
+        decision_type = node_data['decision_type']
+        threshold = node_data['threshold']
+
+        if pretty:
+            threshold = round(threshold, 2)
+
+        return f'{feature}\n{decision_type}\n{threshold}'
 
     @abstractmethod
     def predict(self, data: np.ndarray, labeled_result=False) -> np.ndarray:
@@ -74,22 +85,20 @@ class Tree(object):
         return {data['feature'] for idx, data in self.tree.nodes(
             data=True) if not data['is_leaf']}
 
-    def draw(self, path: str):
+    def draw(self, path: str, pretty=False):
         tree_copy = self.tree.copy()
 
         for _, node_data in tree_copy.nodes(data=True):
             if node_data['is_leaf']:
-                node_data['label'] = self.leaf_label(node_data)
+                node_data['label'] = self.leaf_label(node_data, pretty=pretty)
             else:
-                feature = self.dataset.feature_names[node_data['feature']]
-                decision_type = node_data['decision_type']
-                threshold = node_data['threshold']
-                node_data['label'] = f'{feature}\n{decision_type}\n{threshold}'
+                node_data['shape'] = 'rectangle'
+                node_data['label'] = self.node_label(node_data, pretty=pretty)
 
         graph_str = str(nx.nx_agraph.to_agraph(tree_copy))
         pgv_graph = pgv.AGraph(graph_str)
         pgv_graph.layout(prog='dot')
-        pgv_graph.draw(path)
+        pgv_graph.draw(path, format='png')
 
     def to_str(self):
         pgv_graph = nx.nx_agraph.to_agraph(self.tree)
