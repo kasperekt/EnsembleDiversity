@@ -9,8 +9,8 @@ from sklearn.metrics import accuracy_score
 
 
 class CatboostExperiment(Experiment):
-    def __init__(self, variant: str = ExperimentVariant.INDIVIDUAL):
-        super().__init__(variant)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
 
         self.EnsembleType = CatboostEnsemble
 
