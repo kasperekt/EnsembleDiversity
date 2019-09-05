@@ -1,4 +1,4 @@
-from .Experiment import Experiment, ExperimentVariant
+from .RankExperiment import RankExperiment, ExperimentVariant
 from typing import List
 from data import Dataset
 from structure import RandomForestEnsemble
@@ -6,7 +6,7 @@ from sklearn.model_selection import ParameterGrid
 from sklearn.metrics import accuracy_score
 
 
-class RandomForestExperiment(Experiment):
+class RandomForestExperiment(RankExperiment):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 

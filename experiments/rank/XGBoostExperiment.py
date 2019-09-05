@@ -1,6 +1,6 @@
 import numpy as np
 
-from .Experiment import Experiment, ExperimentVariant
+from .RankExperiment import RankExperiment, ExperimentVariant
 from typing import List
 from data import Dataset
 from structure import XGBoostEnsemble
@@ -8,7 +8,7 @@ from sklearn.model_selection import ParameterGrid
 from sklearn.metrics import accuracy_score
 
 
-class XGBoostExperiment(Experiment):
+class XGBoostExperiment(RankExperiment):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 

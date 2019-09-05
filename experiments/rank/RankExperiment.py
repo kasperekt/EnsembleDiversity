@@ -6,19 +6,14 @@ from abc import ABCMeta, abstractmethod
 from typing import List, Dict
 from data import Dataset
 from collections import namedtuple
-from enum import Enum
 from structure import Ensemble
+from experiments import ExperimentVariant
 
 from sklearn.model_selection import ParameterGrid
 from sklearn.metrics import accuracy_score
 
 
-class ExperimentVariant(Enum):
-    INDIVIDUAL = 'individual'
-    SHARED = 'shared'
-
-
-class Experiment(metaclass=ABCMeta):
+class RankExperiment(metaclass=ABCMeta):
     def __init__(self, variant: str = ExperimentVariant.SHARED, cv: bool = False):
         self.results: List[any] = []
         self.EnsembleType: callable = None
@@ -27,14 +22,15 @@ class Experiment(metaclass=ABCMeta):
         self.name = 'Experiment'
         self.variant = variant
         self.cv = cv
+        self.repetitions = 10
 
     def reset(self):
         self.results = []
 
     def build_shared_param_grid(self):
         return ParameterGrid({
-            'n_estimators': np.arange(5, 100, 5),
-            'max_depth': np.arange(2, 8, 1)
+            'n_estimators': [10, 50, 100],
+            'max_depth': [6]
         })
 
     def add_result(self, **kwargs):
@@ -59,26 +55,22 @@ class Experiment(metaclass=ABCMeta):
             params)
         ensemble.fit(train)
 
-        preds = ensemble.predict(val)
-        accuracy = accuracy_score(val.y, preds)
+        results = []
 
-        return {
-            'name': ensemble.name,
-            'dataset_name': train.name,
-            'accuracy': accuracy,
-            **params,
-            # Structural Measures
-            'node_diversity': ensemble.node_diversity(),
-            'coverage_std': ensemble.coverage_leaves_std(),
-            'coverage_minmax': ensemble.coverage_leaves_minmax(),
-            'used_attributes_ratio': ensemble.used_attributes_ratio(),
-            # Behavioral Measures
-            'entropy': ensemble.entropy(val),
-            'q': ensemble.q(val),
-            'df': ensemble.df(val),
-            'kw': ensemble.kw(val),
-            'corr': ensemble.corr(val)
-        }
+        for idx, tree in enumerate(ensemble.trees):
+            preds = tree.predict(val.X, labeled_result=True)
+            accuracy = accuracy_score(val.y, preds)
+
+            results.append({
+                'name': ensemble.name,
+                'tree_id': idx,
+                'accuracy': accuracy,
+                'num_nodes': tree.num_nodes(),
+                'attributes_ratio': tree.attributes_ratio(),
+                **params
+            })
+
+        return results
 
     def run(self, datasets: List[Dataset]):
         if self.EnsembleType is None:
@@ -89,23 +81,28 @@ class Experiment(metaclass=ABCMeta):
 
         print(f'Running {self.name} experiment...\n\n')
 
-        pool = mp.Pool(mp.cpu_count())
+        def collect(results):
+            for result_dict in results:
+                self.add_result(**result_dict)
 
-        def collect(result_dict):
-            self.add_result(**result_dict)
+        for i in range(self.repetitions):
+            pool = mp.Pool(mp.cpu_count())
 
-        for dataset in datasets:
-            grid = self.param_grid if self.variant == 'individual' else self.shared_param_grid
+            for dataset in datasets:
+                grid = self.param_grid if self.variant == 'individual' else self.shared_param_grid
 
-            for params in grid:   # pylint: disable=not-an-iterable
+                train_val_sets = []
+
                 if self.cv:
-                    for train, val in dataset.n_splits(10):
+                    train_val_sets = [(train, val)
+                                      for train, val in dataset.n_splits(5)]
+                else:
+                    train_val_sets = [dataset.split(0.2)]
+
+                for params in grid:   # pylint: disable=not-an-iterable
+                    for train, val in train_val_sets:
                         pool.apply_async(self.process, args=(
                             train, val, params), callback=collect)
-                else:
-                    train, val = dataset.split(0.2)
-                    pool.apply_async(self.process, args=(
-                        train, val, params), callback=collect)
 
-        pool.close()
-        pool.join()
+            pool.close()
+            pool.join()
