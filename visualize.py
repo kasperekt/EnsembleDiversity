@@ -18,11 +18,24 @@ def result_path(name: str, out_dir=OUT_DIR):
     return path
 
 
-def scatterplot(df, name, x, y='accuracy', datasets=['iris', 'cancer']):
+def scatterplot(df, name, x, y='accuracy', datasets=['iris', 'cancer'], extension='pdf'):
+    LABELS_DICT = {
+        'corr': 'Correlation',
+        'coverage_minmax': 'Coverage (minmax)',
+        'coverage_std': 'Coverage (std)',
+        'entropy': 'Entropy',
+        'kw': 'Kohavi-Wolpert',
+        'node_diversity': 'Node diversity',
+        'q': 'Q',
+        'used_attributes_ratio': 'Used attributes ratio',
+        'accuracy': 'Accuracy'
+    }
+
     ncols = 3
     nrows = ceil(len(datasets) / ncols)
     fig, axes = plt.subplots(ncols=ncols, nrows=nrows,
-                             figsize=(ncols * 5, nrows * 5))
+                             figsize=(ncols * 5, nrows * 4),
+                             constrained_layout=True)
 
     for ax, dataset_name in zip(axes.flat, datasets):
         data_df = df[df['dataset_name'] == dataset_name]
@@ -31,12 +44,11 @@ def scatterplot(df, name, x, y='accuracy', datasets=['iris', 'cancer']):
         xs, ys = values[:, 0], values[:, 1]
 
         ax.set_title(dataset_name)
-        ax.set_xlabel(x)
-        ax.set_ylabel(y)
+        ax.set_xlabel(LABELS_DICT[x])
+        ax.set_ylabel(LABELS_DICT[y])
         ax.scatter(xs, ys)
 
-    fig.suptitle(name)
-    fig.savefig(os.path.join(VIS_DIR, f'{name}-plot.png'))
+    fig.savefig(os.path.join(VIS_DIR, f'{name}-plot.{extension}'))
 
 
 def visualize():
@@ -57,6 +69,10 @@ def visualize():
                         x='node_diversity', datasets=datasets)
             scatterplot(df, name + '__used-attributes-ratio',
                         x='used_attributes_ratio', datasets=datasets)
+            scatterplot(df, name + '__coverage-minmax',
+                        x='coverage_minmax', datasets=datasets)
+            scatterplot(df, name + '__coverage-std',
+                        x='coverage_std', datasets=datasets)
             scatterplot(df, name + '__corr',
                         x='corr', datasets=datasets)
             scatterplot(df, name + '__q',
@@ -65,10 +81,6 @@ def visualize():
                         x='entropy', datasets=datasets)
             scatterplot(df, name + '__kw',
                         x='kw', datasets=datasets)
-            scatterplot(df, name + '__coverage-minmax',
-                        x='coverage_minmax', datasets=datasets)
-            scatterplot(df, name + '__coverage-std',
-                        x='coverage_std', datasets=datasets)
         except FileNotFoundError as file_not_found_err:
             print(file_not_found_err)
 
