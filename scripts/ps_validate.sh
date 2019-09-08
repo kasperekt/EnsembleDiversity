@@ -1,3 +1,5 @@
+#!/bin/sh
+
 gradient jobs create \
     --projectId 'prc8cunsc' \
     --name 'Validate structures' \

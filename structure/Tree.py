@@ -86,7 +86,7 @@ class Tree(object):
             data=True) if not data['is_leaf']}
 
     def attributes_ratio(self) -> float:
-        return self.attributes_used() / self.dataset.num_features()
+        return len(self.attributes_used()) / self.dataset.num_features()
 
     def draw(self, path: str, pretty=False):
         tree_copy = self.tree.copy()

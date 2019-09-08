@@ -27,6 +27,3 @@ class LGBExperiment(RankExperiment):
             return 'multiclass'
 
         return 'binary'
-
-    def get_final_params(self, params, train, val):
-        return {**params, 'objective': self.pick_objective(train)}

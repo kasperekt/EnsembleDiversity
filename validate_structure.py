@@ -2,7 +2,7 @@ import sys
 import numpy as np
 
 from typing import Tuple
-from data import Dataset, load_all_datasets
+from data import Dataset, load_and_split
 from structure import AdaboostEnsemble, RandomForestEnsemble, LGBEnsemble, CatboostEnsemble, XGBoostEnsemble, BaggingEnsemble
 from sklearn.datasets import load_iris, load_breast_cancer
 from sklearn.model_selection import ParameterGrid
@@ -88,7 +88,7 @@ VALIDATORS = {
 
 
 def validate_structure(used_validators={'ada', 'rf'}, verbose=False):
-    train_sets, val_sets = load_all_datasets(test_size=0.5)
+    train_sets, val_sets = load_and_split(test_size=0.5)
 
     param_grid = ParameterGrid({
         'max_depth': range(2, 8),

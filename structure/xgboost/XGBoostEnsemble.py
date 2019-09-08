@@ -10,9 +10,6 @@ from .XGBoostTree import XGBoostTree
 
 class XGBoostEnsemble(Ensemble):
     def __init__(self, params: dict, dataset: Dataset = None):
-        # Always use all cores
-        params['n_jobs'] = -1
-
         super().__init__(params, dataset, name='XGBoostEnsemble')
         self.clf = xgb.XGBClassifier(**params)
 

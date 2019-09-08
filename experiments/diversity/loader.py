@@ -6,12 +6,12 @@ from .CatboostExperiment import CatboostExperiment
 from .XGBoostExperiment import XGBoostExperiment
 
 
-def load_all_experiments(variant, cv):
+def load_all_experiments(variant):
     return [
-        AdaboostExperiment(variant, cv),
-        RandomForestExperiment(variant, cv),
-        BaggingExperiment(variant, cv),
-        LGBExperiment(variant, cv),
-        CatboostExperiment(variant, cv),
-        XGBoostExperiment(variant, cv),
+        AdaboostExperiment(variant),
+        RandomForestExperiment(variant),
+        BaggingExperiment(variant),
+        LGBExperiment(variant),
+        CatboostExperiment(variant),
+        XGBoostExperiment(variant),
     ]

@@ -1,4 +1,5 @@
 from .Dataset import Dataset
+from typing import List
 
 
 MULTI_CLASS_SETS = [('iris', 'active'), ('aids', 'active'),
@@ -24,19 +25,23 @@ def load_dataset(set_id, set_version='active'):
     return Dataset.from_openml(set_id, version=set_version)
 
 
-def load_all_datasets(test_size=0.0, sets=BINARY_CLASS_SETS):
+def load_all_datasets(sets=BINARY_CLASS_SETS) -> List[Dataset]:
     datasets = [load_dataset(set_id, set_version)
                 for set_id, set_version in sets]
 
-    if test_size > 0:
-        train_sets = []
-        val_sets = []
-
-        for dataset in datasets:
-            train_set, val_set = dataset.split(test_size)
-            train_sets.append(train_set)
-            val_sets.append(val_set)
-
-        return train_sets, val_sets
-
     return datasets
+
+
+def load_and_split(test_size: float, sets=BINARY_CLASS_SETS):
+    if not (test_size > 0.0 and test_size <= 1.0):
+        raise ValueError('Test size should be in range 0-1')
+
+    train_sets = []
+    val_sets = []
+
+    for dataset in load_all_datasets(sets=sets):
+        train_set, val_set = dataset.split(test_size)
+        train_sets.append(train_set)
+        val_sets.append(val_set)
+
+    return train_sets, val_sets

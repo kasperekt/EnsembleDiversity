@@ -9,11 +9,19 @@ from structure import Ensemble, Tree
 
 class LGBEnsemble(Ensemble):
     def __init__(self, params: dict, dataset: Dataset = None, name='LightGBM'):
-        # Always use all cores
-        params['n_jobs'] = -1
+        mod_params = self.prepare_params(params)
 
-        super().__init__(params, dataset, name)
-        self.clf = lgb.LGBMClassifier(**params)
+        super().__init__(mod_params, dataset, name)
+        self.clf = lgb.LGBMClassifier(**mod_params)
+
+    def prepare_params(self, params: dict) -> dict:
+        mod_params = {**params}
+
+        if 'num_leaves' not in mod_params:
+            max_depth = mod_params['max_depth'] if 'max_depth' in mod_params else 4
+            mod_params['num_leaves'] = (2 ** (max_depth - 1))
+
+        return mod_params
 
     def fit(self, dataset: Dataset):
         self.set_dataset(dataset)
