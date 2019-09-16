@@ -1,6 +1,7 @@
 import os
 
 import itertools
+from experiments import Experiment
 import experiments.diversity as div
 import experiments.rank as rank
 
@@ -10,12 +11,15 @@ from typing import List
 from sklearn.datasets import load_iris, load_breast_cancer
 
 
-def run_experiment(variant: str, cv: bool, experiment: str, repetitions: int):
+def pick_experiments(experiment: str, variant: str) -> List[Experiment]:
     if experiment == 'diversity':
-        experiments = div.load_all_experiments(variant)
+        return div.load_all_experiments(variant)
     elif experiment == 'rank':
-        experiments = rank.load_all_experiments(variant)
+        return rank.load_all_experiments(variant)
 
+
+def run_experiments(variant: str, cv: bool, experiment: str, repetitions: int):
+    experiments = pick_experiments(experiment, variant)
     datasets = load_all_datasets()
 
     if cv > 1:
@@ -43,4 +47,4 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     prepare_env()
-    run_experiment(args.variant, args.cv, args.experiment, args.reps)
+    run_experiments(args.variant, args.cv, args.experiment, args.reps)

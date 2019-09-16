@@ -19,7 +19,7 @@ class DiversityExperiment(Experiment):
     def collect(self, payload):
         self.add_result(**payload)
 
-    def process(self, train: Dataset, val: Dataset, params: dict):
+    def process(self, repetition: int, train: Dataset, val: Dataset, params: dict):
         '''
         Run individual experiment
         '''

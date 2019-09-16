@@ -10,8 +10,8 @@ from sklearn.metrics import accuracy_score
 class RankExperiment(Experiment):
     def build_shared_param_grid(self):
         return ParameterGrid({
-            'n_estimators': [10, 25, 50],
-            'max_depth': [5]
+            'n_estimators': [10, 40, 80],
+            'max_depth': [6]
         })
 
     def process(self, repetition: int, train: Dataset, val: Dataset, params: dict):
@@ -41,6 +41,7 @@ class RankExperiment(Experiment):
                 'ensemble_accuracy': ensemble_acc,
                 'accuracy': accuracy,
                 'num_nodes': tree.num_nodes(),
+                'attributes_count': tree.attributes_count(),
                 'attributes_ratio': tree.attributes_ratio(),
                 **params
             })

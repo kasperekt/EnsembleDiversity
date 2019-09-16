@@ -85,6 +85,9 @@ class Tree(object):
         return {data['feature'] for idx, data in self.tree.nodes(
             data=True) if not data['is_leaf']}
 
+    def attributes_count(self) -> int:
+        return len(self.attributes_used())
+
     def attributes_ratio(self) -> float:
         return len(self.attributes_used()) / self.dataset.num_features()
 

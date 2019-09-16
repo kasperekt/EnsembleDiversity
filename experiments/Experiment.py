@@ -41,6 +41,7 @@ class Experiment(metaclass=ABCMeta):
             raise ValueError(
                 'Results are empty. Try "run" before saving to csv.')
 
+        print(f'Saving {self.name} results to {filepath}')
         df = pd.DataFrame(self.results)
         df.to_csv(filepath)
 
@@ -65,11 +66,11 @@ class Experiment(metaclass=ABCMeta):
 
         grid = self.param_grid if self.variant == 'individual' else self.shared_param_grid
 
-        for _ in range(repetitions):
+        for rep in range(repetitions):
             for params in grid:   # pylint: disable=not-an-iterable
                 for train, val in datasets:
                     pool.apply_async(self.process, args=(
-                        train, val, params), callback=self.collect)
+                        rep, train, val, params), callback=self.collect)
 
         pool.close()
         pool.join()
