@@ -49,6 +49,14 @@ class Ensemble(metaclass=ABCMeta):
         warnings.warn(
             'ATTENTION! Cannot encode dataset. It won\'t have transformed features as one-hot vectors.')
 
+    def avg_attributes_used(self) -> float:
+        acc = []
+
+        for tree in self.trees:
+            acc.append(len(tree.attributes_used()))
+
+        return np.mean(acc)
+
     def used_attributes_ratio(self) -> float:
         if self.dataset is None:
             return -1
@@ -59,6 +67,10 @@ class Ensemble(metaclass=ABCMeta):
             attributes.update(tree.attributes_used())
 
         return len(attributes) / self.dataset.num_features()
+
+    def avg_node_count(self) -> float:
+        node_counts = np.array([tree.num_nodes() for tree in self.trees])
+        return node_counts.mean()
 
     def node_diversity(self) -> float:
         node_counts = np.array([tree.num_nodes() for tree in self.trees])
@@ -96,6 +108,23 @@ class Ensemble(metaclass=ABCMeta):
             return 0
 
         return np.std(acc)
+
+    def coverage_leaves_avg(self) -> float:
+        acc = []
+
+        for coverage in self.get_coverage():
+            if coverage.size() == 0:
+                continue
+
+            leaves_dict = coverage.get_leaves_dict()
+            sizes = np.array([len(items) for items in leaves_dict.values()])
+            sizes = sizes / np.sum(sizes)
+            acc.append(sizes.max() - sizes.min())
+
+        if len(acc) < 1:
+            return 0
+
+        return np.mean(acc)
 
     def q(self, val_set: Dataset) -> float:
         results = []

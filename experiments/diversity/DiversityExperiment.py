@@ -37,10 +37,14 @@ class DiversityExperiment(Experiment):
             'dataset_name': train.name,
             'accuracy': accuracy,
             **params,
+            # Attributes
+            'avg_node_count': ensemble.avg_node_count(),
+            'avg_attributes_used': ensemble.avg_attributes_used(),
             # Structural Measures
             'node_diversity': ensemble.node_diversity(),
             'coverage_std': ensemble.coverage_leaves_std(),
             'coverage_minmax': ensemble.coverage_leaves_minmax(),
+            'coverage_avg': ensemble.coverage_leaves_avg(),
             'used_attributes_ratio': ensemble.used_attributes_ratio(),
             # Behavioral Measures
             'entropy': ensemble.entropy(val),
