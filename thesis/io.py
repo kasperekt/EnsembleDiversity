@@ -3,6 +3,7 @@ import pandas as pd
 
 NAMES = ['bagging', 'adaboost', 'randomforest',
          'lgb', 'catboost', 'xgboost']
+VALID_NAMES = [*NAMES, 'all']
 
 
 def csv_path(base_dir, name):
@@ -15,7 +16,7 @@ def read_csv(base_dir: str, classifier_name: str):
         raise NotADirectoryError(
             f'{base_dir} is not a directory (or it does not exist.)')
 
-    if classifier_name not in NAMES:
+    if classifier_name not in VALID_NAMES:
         raise AttributeError(f'Wrong classifier name {classifier_name}')
 
     df_path = csv_path(base_dir, classifier_name)

@@ -1,9 +1,6 @@
-from abc import ABCMeta, abstractmethod
-from typing import List, Dict, Tuple
 from data import Dataset
-from collections import namedtuple
 from structure import Ensemble
-from experiments import ExperimentVariant, Experiment
+from experiments import Experiment
 
 from sklearn.model_selection import ParameterGrid
 from sklearn.metrics import accuracy_score
