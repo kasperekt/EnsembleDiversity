@@ -7,5 +7,5 @@ numpy==1.16.1
 pandas==0.24.1
 pygraphviz==1.5
 scikit-learn
-scipy==1.2.1
+scipy==1.10.0
 xgboost
